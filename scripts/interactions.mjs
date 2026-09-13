@@ -1,8 +1,8 @@
 /* Testa fluxos interativos: menu mobile, modais, formulário, FAQ, WhatsApp e âncoras. */
-import pw from '/opt/node22/lib/node_modules/playwright/index.js'
+import { chromium } from './_playwright.mjs'
 const OUT = process.env.OUT || '/tmp/shots'
 const BASE = 'http://localhost:4173'
-const b = await pw.chromium.launch()
+const b = await chromium.launch()
 const fails = []
 const check = (ok, label) => { console.log(`${ok ? 'PASS' : 'FAIL'} — ${label}`); if (!ok) fails.push(label) }
 

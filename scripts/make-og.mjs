@@ -1,7 +1,7 @@
 /* Gera public/og-image.png (1200x630) a partir de um HTML, usando o Chromium.
    Rode com: node scripts/make-og.mjs
    // SUBSTITUIR PELA IMAGEM OFICIAL quando houver fotos/arte da unidade. */
-import pw from '/opt/node22/lib/node_modules/playwright/index.js'
+import { chromium } from './_playwright.mjs'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 
@@ -71,7 +71,7 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><style>
   </div>
 </body></html>`
 
-const b = await pw.chromium.launch()
+const b = await chromium.launch()
 const page = await (await b.newContext({ viewport: { width: 1200, height: 630 }, deviceScaleFactor: 1 })).newPage()
 await page.setContent(html, { waitUntil: 'load' })
 await page.waitForTimeout(300)

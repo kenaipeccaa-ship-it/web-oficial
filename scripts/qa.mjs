@@ -1,6 +1,5 @@
 /* QA visual automatizado: console, rolagem horizontal, breakpoints e screenshots. */
-import pw from '/opt/node22/lib/node_modules/playwright/index.js'
-const { chromium } = pw
+import { chromium } from './_playwright.mjs'
 import fs from 'node:fs'
 
 const BASE = process.env.BASE || 'http://localhost:4173'

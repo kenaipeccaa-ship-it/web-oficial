@@ -46,6 +46,9 @@
   font-size: 0.95rem;
   line-height: 1.25;
   letter-spacing: -0.01em;
+  /* Nunca quebrar no meio da palavra: o layout abaixo garante o espaço. */
+  overflow-wrap: normal;
+  hyphens: none;
 }
 
 .goal__icon {
@@ -67,4 +70,18 @@
 
 @media (min-width: 560px) { .goals { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (min-width: 900px) { .goals { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-@media (min-width: 1200px) { .goals { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+
+/* Com 5 colunas o card fica estreito: o conteúdo passa a ser empilhado,
+   liberando a largura inteira para o texto. */
+@media (min-width: 1160px) {
+  .goals { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .goal {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.1rem;
+    min-height: 170px;
+    padding: 1.35rem 1.3rem;
+  }
+  .goal__icon { position: absolute; top: 1.35rem; right: 1.3rem; margin-left: 0; }
+  .goal__label { font-size: 1rem; padding-right: 1.5rem; }
+}
