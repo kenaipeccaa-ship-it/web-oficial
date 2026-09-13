@@ -1,0 +1,26 @@
+/* ==========================================================================
+   TIPOGRAFIA
+   Fontes carregadas do Google Fonts com pré-conexão declarada no index.html.
+   Se a rede estiver indisponível, o navegador usa a pilha de fallback do
+   sistema — o layout não quebra.
+   ========================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap');
+
+/* Fallbacks com métricas ajustadas para reduzir o "salto" de layout. */
+@font-face {
+  font-family: 'Archivo Fallback';
+  src: local('Arial Bold'), local('Helvetica Bold'), local('Arial');
+  size-adjust: 104%;
+  ascent-override: 92%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Inter Fallback';
+  src: local('Helvetica Neue'), local('Arial');
+  size-adjust: 100%;
+  ascent-override: 90%;
+  descent-override: 22%;
+  line-gap-override: 0%;
+}

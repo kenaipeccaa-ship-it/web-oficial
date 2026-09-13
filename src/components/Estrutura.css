@@ -1,0 +1,68 @@
+/* ============================== ESTRUTURA ================================ */
+.gal {
+  display: grid;
+  gap: clamp(0.7rem, 1.4vw, 1rem);
+  grid-template-columns: 1fr;
+}
+
+.gal__item {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--r-lg);
+  border: 1px solid var(--line);
+  aspect-ratio: 4 / 3;
+  transition: border-color var(--t-base) var(--ease), transform var(--t-base) var(--ease),
+    box-shadow var(--t-base) var(--ease), opacity var(--t-slow) var(--ease-out);
+}
+.gal__item:hover { border-color: var(--line-strong); transform: translateY(-4px); box-shadow: var(--sh-md); }
+
+.gal__photo { position: absolute; inset: 0; }
+.gal__item:hover .gal__photo .art,
+.gal__item:hover .gal__photo .photo__img { transform: scale(1.07); }
+
+.gal__overlay {
+  position: absolute;
+  inset: auto 0 0 0;
+  z-index: 2;
+  padding: clamp(1rem, 2.4vw, 1.5rem);
+  /* Espaço para o selo "imagem ilustrativa" no canto inferior. */
+  padding-bottom: 2.9rem;
+  background: linear-gradient(to top, rgba(6, 7, 10, 0.95) 8%, rgba(6, 7, 10, 0.55) 55%, transparent);
+  pointer-events: none;
+}
+
+.gal__title {
+  font-size: clamp(1rem, 2.1vw, 1.2rem);
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+}
+
+.gal__text {
+  margin-top: 0.35rem;
+  font-size: 0.86rem;
+  color: var(--text-muted);
+  max-width: 34ch;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity var(--t-base) var(--ease), transform var(--t-base) var(--ease);
+}
+.gal__item:hover .gal__text,
+.gal__item:focus-within .gal__text { opacity: 1; transform: none; }
+
+/* No touch a descrição fica sempre visível (não há hover). */
+@media (hover: none) {
+  .gal__text { opacity: 1; transform: none; }
+}
+
+.estrutura__note { margin-top: clamp(1.5rem, 3vw, 2.25rem); }
+
+@media (min-width: 640px) {
+  .gal { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .gal__item--lg { grid-column: span 2; aspect-ratio: 16 / 9; }
+}
+
+@media (min-width: 1024px) {
+  .gal { grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: minmax(0, auto); }
+  .gal__item { aspect-ratio: 1 / 1; }
+  .gal__item--lg { grid-column: span 2; grid-row: span 2; aspect-ratio: auto; }
+}

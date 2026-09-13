@@ -1,0 +1,143 @@
+/* ========================= BOTAO FLUTUANTE WHATSAPP ====================== */
+.wa {
+  position: fixed;
+  right: clamp(0.85rem, 3vw, 1.75rem);
+  bottom: calc(env(safe-area-inset-bottom, 0px) + clamp(0.85rem, 3vw, 1.75rem));
+  z-index: var(--z-float);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.7rem;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(16px) scale(0.94);
+  transition: opacity var(--t-base) var(--ease), transform var(--t-base) var(--ease-out), visibility var(--t-base);
+  max-width: calc(100vw - 1.7rem);
+}
+.wa.is-visible { opacity: 1; visibility: visible; transform: none; }
+
+/* ------------------------------- Painel ---------------------------------- */
+.wa__panel {
+  width: min(300px, calc(100vw - 2rem));
+  padding: 0.9rem;
+  border-radius: var(--r-lg);
+  background: var(--ink-800);
+  border: 1px solid var(--line-strong);
+  box-shadow: var(--sh-lg);
+  animation: wa-in 260ms var(--ease-out) both;
+}
+.wa__panel[hidden] { display: none; }
+
+.wa__panel-head { padding: 0.2rem 0.35rem 0.75rem; }
+.wa__panel-title {
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+.wa__panel-sub { margin-top: 0.25rem; font-size: 0.78rem; color: var(--text-faint); line-height: 1.45; }
+
+.wa__panel ul { display: grid; gap: 0.4rem; }
+
+.wa__option {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.65rem 0.7rem;
+  border-radius: var(--r-md);
+  border: 1px solid var(--line);
+  background: var(--surface);
+  text-align: left;
+  font-size: 0.875rem;
+  color: var(--text-soft);
+  transition: border-color var(--t-fast) var(--ease), background-color var(--t-fast) var(--ease),
+    transform var(--t-fast) var(--ease);
+}
+.wa__option:hover { border-color: rgba(31, 170, 90, 0.5); background: rgba(31, 170, 90, 0.1); transform: translateX(-2px); }
+.wa__option > svg:last-child { margin-left: auto; color: var(--text-faint); flex: none; }
+
+.wa__option-icon {
+  display: grid;
+  place-items: center;
+  width: 30px; height: 30px;
+  flex: none;
+  border-radius: 9px;
+  background: var(--ink-750);
+  color: #37d47e;
+}
+.wa__option-label { line-height: 1.3; }
+
+.wa__panel-note {
+  margin-top: 0.7rem;
+  padding: 0.6rem 0.7rem;
+  border-radius: var(--r-sm);
+  border: 1px dashed var(--line-strong);
+  font-size: 0.72rem;
+  line-height: 1.45;
+  color: var(--text-faint);
+}
+.wa__panel-note strong { color: var(--volt); font-weight: 600; }
+
+/* --------------------------------- FAB ----------------------------------- */
+.wa__fab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  height: 56px;
+  padding: 0 1.1rem 0 1rem;
+  border-radius: var(--r-pill);
+  background: #1faa5a;
+  color: #fff;
+  box-shadow: 0 16px 36px -14px rgba(31, 170, 90, 0.9);
+  font-family: var(--font-display);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: background-color var(--t-fast) var(--ease), transform var(--t-fast) var(--ease),
+    box-shadow var(--t-base) var(--ease);
+}
+.wa__fab:hover { background: #23c267; transform: translateY(-2px); }
+.wa__fab:active { transform: translateY(0) scale(0.97); }
+
+.wa__fab-icon { display: grid; place-items: center; flex: none; }
+
+.wa__fab::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  opacity: 0;
+  animation: wa-ping 3.2s var(--ease) infinite;
+}
+.wa.is-open .wa__fab::before { animation: none; }
+
+/* No celular o rótulo some para o botão não ocupar a tela. */
+.wa__fab-label { display: none; }
+
+@media (min-width: 640px) {
+  .wa__fab-label { display: inline; }
+}
+
+@media (max-width: 639px) {
+  .wa__fab { width: 56px; padding: 0; justify-content: center; }
+}
+
+@keyframes wa-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes wa-ping {
+  0% { opacity: 0.9; transform: scale(1); }
+  60% { opacity: 0; transform: scale(1.22); }
+  100% { opacity: 0; transform: scale(1.22); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wa__fab::before { animation: none; }
+}

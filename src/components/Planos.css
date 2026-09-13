@@ -1,0 +1,118 @@
+/* ================================ PLANOS ================================= */
+.planos { position: relative; overflow: hidden; }
+.planos__glow {
+  width: 700px; height: 700px;
+  left: 50%; top: -300px;
+  transform: translateX(-50%);
+  background: rgba(76, 134, 255, 0.12);
+}
+
+.plans {
+  display: grid;
+  gap: clamp(0.9rem, 1.8vw, 1.35rem);
+  grid-template-columns: 1fr;
+  align-items: stretch;
+}
+
+.plan {
+  position: relative;
+  /* O selo sai da borda do card, então este não pode recortar. */
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
+  padding: clamp(1.5rem, 2.8vw, 2.1rem);
+}
+
+.plan--featured {
+  border-color: var(--volt-line);
+  background: linear-gradient(180deg, rgba(200, 250, 75, 0.09), rgba(255, 255, 255, 0.02) 45%);
+  box-shadow: 0 30px 70px -40px rgba(200, 250, 75, 0.5);
+}
+.plan--featured:hover { border-color: rgba(200, 250, 75, 0.55); }
+
+.plan__badge {
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 0.32rem 0.8rem;
+  border-radius: var(--r-pill);
+  background: var(--volt);
+  color: #0a0c10;
+  font-family: var(--font-display);
+  font-size: 0.56rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  box-shadow: var(--sh-volt);
+  max-width: calc(100% - 2rem);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.plan__icon {
+  display: grid;
+  place-items: center;
+  width: 44px; height: 44px;
+  border-radius: 13px;
+  border: 1px solid var(--line-strong);
+  background: var(--surface-2);
+  color: var(--volt);
+  margin-bottom: 0.9rem;
+}
+.plan--featured .plan__icon { background: var(--volt); color: #0a0c10; border-color: var(--volt); }
+
+.plan__name { font-size: 1.35rem; text-transform: uppercase; }
+.plan__text { margin-top: 0.45rem; color: var(--text-muted); font-size: 0.94rem; }
+
+.plan__price {
+  padding: 1rem 1.1rem;
+  border-radius: var(--r-md);
+  border: 1px dashed var(--line-strong);
+  background: rgba(255, 255, 255, 0.02);
+}
+.plan__price-label {
+  display: block;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.plan__price strong {
+  display: block;
+  margin-top: 0.3rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, 2.4vw, 1.25rem);
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: var(--volt);
+}
+
+.plan__items { display: grid; gap: 0.75rem; flex: 1; }
+.plan__items li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: 0.2rem 0.6rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.9rem;
+}
+.plan__items li:last-child { border-bottom: 0; padding-bottom: 0; }
+.plan__items svg { color: var(--volt); margin-top: 4px; grid-row: span 2; }
+.plan__item-label { color: var(--text); }
+.plan__item-value { color: var(--text-faint); font-size: 0.82rem; }
+
+.planos__note { margin-top: clamp(1.5rem, 3vw, 2.25rem); }
+
+@media (min-width: 720px) {
+  .plans { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 1024px) {
+  .plans { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: center; }
+  .plan--featured { transform: scale(1.035); z-index: 1; }
+  .plan--featured:hover { transform: scale(1.035) translateY(-4px); }
+}

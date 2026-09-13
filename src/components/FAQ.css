@@ -1,0 +1,84 @@
+/* ================================= FAQ =================================== */
+.faq__inner {
+  display: grid;
+  gap: clamp(2rem, 4.5vw, 3.5rem);
+  grid-template-columns: 1fr;
+  align-items: start;
+}
+
+.faq__aside .sec-head { margin-bottom: 1.5rem; }
+
+.faq__help {
+  display: grid;
+  gap: 0.85rem;
+  justify-items: start;
+  padding: 1.25rem;
+  border-radius: var(--r-lg);
+  border: 1px dashed var(--line-strong);
+  background: rgba(255, 255, 255, 0.02);
+}
+.faq__help p { color: var(--text-muted); font-size: 0.92rem; }
+
+.acc { display: grid; gap: 0.65rem; }
+
+.acc__item {
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: linear-gradient(180deg, var(--surface-2), var(--surface));
+  overflow: hidden;
+  transition: border-color var(--t-base) var(--ease), background-color var(--t-base) var(--ease);
+}
+.acc__item:hover { border-color: var(--line-strong); }
+.acc__item.is-open { border-color: var(--volt-line); background: rgba(200, 250, 75, 0.045); }
+
+.acc__trigger {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  padding: 1.1rem clamp(1rem, 2.2vw, 1.4rem);
+  text-align: left;
+  font-family: var(--font-body);
+  font-size: clamp(0.95rem, 1.9vw, 1.02rem);
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text);
+  transition: color var(--t-fast) var(--ease);
+}
+.acc__trigger:hover { color: var(--volt); }
+
+.acc__sign {
+  display: grid;
+  place-items: center;
+  width: 32px; height: 32px;
+  flex: none;
+  margin-left: auto;
+  border-radius: 50%;
+  border: 1px solid var(--line-strong);
+  color: var(--text-muted);
+  transition: transform var(--t-base) var(--ease), color var(--t-fast) var(--ease),
+    border-color var(--t-fast) var(--ease), background-color var(--t-fast) var(--ease);
+}
+.acc__item.is-open .acc__sign {
+  transform: rotate(180deg);
+  color: #0a0c10;
+  background: var(--volt);
+  border-color: var(--volt);
+}
+
+.acc__panel {
+  padding: 0 clamp(1rem, 2.2vw, 1.4rem) 1.2rem;
+  animation: acc-open 340ms var(--ease-out) both;
+}
+.acc__panel p { color: var(--text-muted); font-size: 0.93rem; max-width: 64ch; }
+.acc__panel[hidden] { display: none; }
+
+@keyframes acc-open {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (min-width: 1024px) {
+  .faq__inner { grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); gap: clamp(3rem, 6vw, 5rem); }
+  .faq__aside { position: sticky; top: calc(var(--header-h) + 2rem); }
+}

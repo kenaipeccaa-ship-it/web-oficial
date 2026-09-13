@@ -1,0 +1,57 @@
+/* ================================== CTA ================================== */
+.cta {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  padding-block: clamp(5rem, 13vw, 10rem);
+  text-align: center;
+}
+
+.cta__bg { position: absolute; inset: 0; z-index: -1; }
+.cta__photo { position: absolute; inset: 0; }
+.cta__scrim {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to bottom, var(--ink-950), rgba(6, 7, 10, 0.66) 34%, rgba(6, 7, 10, 0.76) 66%, var(--ink-950)),
+    radial-gradient(60% 60% at 50% 50%, rgba(200, 250, 75, 0.12), transparent 72%);
+}
+
+.cta__inner { display: grid; justify-items: center; }
+.cta__eyebrow { justify-content: center; }
+
+.cta__title {
+  margin-top: 1.2rem;
+  font-size: clamp(2.1rem, 6.6vw, 4.5rem);
+  line-height: 1.06;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+}
+.cta__title span { display: block; }
+.cta__title-accent {
+  color: transparent;
+  background: linear-gradient(100deg, var(--volt) 5%, #f0ffc4 50%, var(--volt-600) 95%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.cta__text {
+  margin-top: clamp(1.1rem, 2.4vw, 1.6rem);
+  font-size: var(--fs-lead);
+  color: var(--text-soft);
+  max-width: 44ch;
+}
+
+.cta__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: clamp(1.75rem, 3.5vw, 2.5rem);
+  width: 100%;
+}
+.cta__actions .btn { flex: 1 1 260px; max-width: 100%; }
+
+@media (min-width: 640px) {
+  .cta__actions .btn { flex: 0 0 auto; }
+}
