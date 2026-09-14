@@ -31,7 +31,10 @@ for (const s of sizes) {
   })
   const page = await ctx.newPage()
   const logs = []
-  page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') logs.push(`[${m.type()}] ${m.text()}`) })
+  page.on('console', (m) => {
+    if (/ERR_CONNECTION|ERR_CERT|Failed to load resource/.test(m.text())) return // fonte externa bloqueada no ambiente
+    if (m.type() === 'error' || m.type() === 'warning') logs.push(`[${m.type()}] ${m.text()}`)
+  })
   page.on('pageerror', (e) => logs.push(`[pageerror] ${e.message}`))
 
   await page.goto(BASE, { waitUntil: 'networkidle' })

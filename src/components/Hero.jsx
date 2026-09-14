@@ -1,11 +1,13 @@
 import { Icon } from './ui/Icon.jsx'
 import PhotoFrame from './ui/PhotoFrame.jsx'
-import { brand } from '../config/site.js'
+import { useSiteInfo } from '../lib/content.jsx'
 import './Hero.css'
 
 const tags = ['Musculação', 'Cardio', 'Aulas coletivas']
 
 export default function Hero() {
+  const brand = useSiteInfo()
+
   return (
     <section className="hero" id="inicio">
       {/* Fundo: arte gráfica em tela cheia.
@@ -25,13 +27,11 @@ export default function Hero() {
           </p>
 
           <h1 className="hero__title">
-            <span className="hero__line"><span>Seu próximo nível</span></span>
-            <span className="hero__line"><span>começa aqui.</span></span>
+            <span className="hero__line"><span>{brand.heroTitleLine1}</span></span>
+            <span className="hero__line"><span>{brand.heroTitleLine2}</span></span>
           </h1>
 
-          <p className="hero__lead">
-            Treine, evolua e faça parte de uma experiência pensada para quem busca mais disposição, saúde e performance.
-          </p>
+          <p className="hero__lead">{brand.heroLead}</p>
 
           <div className="hero__actions">
             <a className="btn btn--primary btn--lg" href="#experimental">

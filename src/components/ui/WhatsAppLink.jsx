@@ -1,4 +1,5 @@
-import { waHref } from '../../lib/whatsapp.js'
+import { buildWaHref } from '../../lib/whatsapp.js'
+import { useWhatsAppNumber } from '../../lib/content.jsx'
 import { useNotice } from '../../lib/notice.jsx'
 
 /**
@@ -8,7 +9,8 @@ import { useNotice } from '../../lib/notice.jsx'
  * numero inventado.
  */
 export function WhatsAppLink({ message, className = '', children, ariaLabel, ...rest }) {
-  const href = waHref(message)
+  const number = useWhatsAppNumber()
+  const href = buildWaHref(number, message)
   const { notify } = useNotice()
 
   if (href) {

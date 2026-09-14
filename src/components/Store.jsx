@@ -8,7 +8,8 @@ import ProductFilters from './store/ProductFilters.jsx'
 import SearchProducts from './store/SearchProducts.jsx'
 import Cart from './store/Cart.jsx'
 import { useCart } from '../lib/cart.jsx'
-import { products, storeCategories } from '../data/products.js'
+import { storeCategories } from '../data/products.js'
+import { useSiteInfo, useStoreProducts } from '../lib/content.jsx'
 import { whatsappMessages } from '../config/site.js'
 import './Store.css'
 
@@ -20,6 +21,8 @@ const norm = (t) =>
     .replace(/[̀-ͯ]/g, '')
 
 export default function Store() {
+  const products = useStoreProducts()
+  const info = useSiteInfo()
   const [category, setCategory] = useState('todos')
   const [query, setQuery] = useState('')
   const [openProduct, setOpenProduct] = useState(null)
@@ -32,7 +35,7 @@ export default function Store() {
       if (c.id !== 'todos') map[c.id] = products.filter((p) => p.category === c.id).length
     })
     return map
-  }, [])
+  }, [products])
 
   const visible = useMemo(() => {
     const q = norm(query.trim())
@@ -41,7 +44,7 @@ export default function Store() {
       if (!q) return true
       return norm(`${p.name} ${p.category} ${p.description}`).includes(q)
     })
-  }, [category, query])
+  }, [category, query, products])
 
   const inCart = (id) => items.some((i) => i.id === id)
 
@@ -70,11 +73,8 @@ export default function Store() {
               <span>Seu suporte.</span>
               <span className="store__title-accent">Sua suplementação.</span>
             </h2>
-            <p className="store__lead">Suplementação para acompanhar sua rotina de treino.</p>
-            <p className="store__text">
-              A loja da unidade reúne suplementos e acessórios para quem já treina e quer resolver tudo no mesmo lugar.
-              Escolha os produtos, monte seu pedido e finalize pelo WhatsApp.
-            </p>
+            <p className="store__lead">{info.storeLead}</p>
+            <p className="store__text">{info.storeText}</p>
           </Reveal>
 
           <Reveal className="store__aside" delay={120}>

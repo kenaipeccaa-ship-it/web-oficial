@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Icon } from './ui/Icon.jsx'
 import WhatsAppLink from './ui/WhatsAppLink.jsx'
-import { brand, demoNotice, navLinks, whatsappMessages } from '../config/site.js'
+import { demoNotice, navLinks, whatsappMessages } from '../config/site.js'
+import { useSiteInfo } from '../lib/content.jsx'
 import { useLockBodyScroll } from '../hooks/useLockBodyScroll.js'
 import { useScrollSpy } from '../hooks/useScrollSpy.js'
 import './Header.css'
 
 export default function Header() {
+  const brand = useSiteInfo()
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   useLockBodyScroll(open)

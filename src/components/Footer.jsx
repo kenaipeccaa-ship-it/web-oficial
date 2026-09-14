@@ -1,9 +1,8 @@
 import { Icon, WhatsAppGlyph } from './ui/Icon.jsx'
 import WhatsAppLink from './ui/WhatsAppLink.jsx'
 import { useNotice } from '../lib/notice.jsx'
-import {
-  INSTAGRAM_HANDLE, INSTAGRAM_URL, brand, demoNotice, whatsappMessages,
-} from '../config/site.js'
+import { demoNotice, whatsappMessages } from '../config/site.js'
+import { useSiteInfo } from '../lib/content.jsx'
 import './Footer.css'
 
 const footerLinks = [
@@ -15,6 +14,9 @@ const footerLinks = [
 ]
 
 export default function Footer() {
+  const brand = useSiteInfo()
+  const INSTAGRAM_URL = brand.instagramUrl
+  const INSTAGRAM_HANDLE = brand.instagramHandle
   const { notify } = useNotice()
   const year = new Date().getFullYear()
 

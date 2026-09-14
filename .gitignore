@@ -5,3 +5,8 @@ dist-ssr
 *.local
 .DS_Store
 npm-debug.log*
+
+# Ambiente e dados do painel administrativo
+.env
+.env.local
+data/

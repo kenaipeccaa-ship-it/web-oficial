@@ -2,10 +2,13 @@ import { Icon } from './ui/Icon.jsx'
 import PhotoFrame from './ui/PhotoFrame.jsx'
 import Reveal from './ui/Reveal.jsx'
 import WhatsAppLink from './ui/WhatsAppLink.jsx'
-import { brand, whatsappMessages } from '../config/site.js'
+import { whatsappMessages } from '../config/site.js'
+import { useSiteInfo } from '../lib/content.jsx'
 import './CTA.css'
 
 export default function CTA() {
+  const brand = useSiteInfo()
+
   return (
     <section className="cta" id="cta" aria-labelledby="cta-title">
       <div className="cta__bg" aria-hidden="true">

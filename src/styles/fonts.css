@@ -1,10 +1,9 @@
 /* ==========================================================================
    TIPOGRAFIA
-   Fontes carregadas do Google Fonts com pré-conexão declarada no index.html.
-   Se a rede estiver indisponível, o navegador usa a pilha de fallback do
-   sistema — o layout não quebra.
+   As fontes do Google são carregadas por <link> no index.html, não por
+   @import aqui: um @import que falha derruba o stylesheet inteiro, enquanto
+   um <link> que falha apenas cai na pilha de fallback do sistema.
    ========================================================================== */
-@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap');
 
 /* Fallbacks com métricas ajustadas para reduzir o "salto" de layout. */
 @font-face {

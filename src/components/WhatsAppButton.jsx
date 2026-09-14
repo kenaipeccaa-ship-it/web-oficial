@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Icon, WhatsAppGlyph } from './ui/Icon.jsx'
 import WhatsAppLink from './ui/WhatsAppLink.jsx'
-import { isWhatsAppConfigured } from '../lib/whatsapp.js'
+import { useWhatsAppNumber } from '../lib/content.jsx'
 import { whatsappMessages } from '../config/site.js'
 import './WhatsAppButton.css'
 
@@ -15,6 +15,7 @@ const quickOptions = [
 export default function WhatsAppButton() {
   const [open, setOpen] = useState(false)
   const [visible, setVisible] = useState(false)
+  const whatsappNumber = useWhatsAppNumber()
   const wrapRef = useRef(null)
 
   useEffect(() => {
@@ -54,7 +55,7 @@ export default function WhatsAppButton() {
             </li>
           ))}
         </ul>
-        {!isWhatsAppConfigured() && (
+        {!whatsappNumber && (
           <p className="wa__panel-note">
             Demonstração: o número ainda não foi configurado (campo único <strong>WHATSAPP_NUMBER</strong>).
           </p>

@@ -3,10 +3,12 @@ import Reveal from './ui/Reveal.jsx'
 import SectionHeading from './ui/SectionHeading.jsx'
 import WhatsAppLink from './ui/WhatsAppLink.jsx'
 import { useNotice } from '../lib/notice.jsx'
-import { brand, openingHours, whatsappMessages } from '../config/site.js'
+import { whatsappMessages } from '../config/site.js'
+import { useSiteInfo } from '../lib/content.jsx'
 import './Localizacao.css'
 
 export default function Localizacao() {
+  const brand = useSiteInfo()
   const { notify } = useNotice()
   const hasMap = Boolean(brand.mapEmbedUrl)
   const hasDirections = Boolean(brand.mapsDirectionsUrl)
@@ -18,7 +20,7 @@ export default function Localizacao() {
           eyebrow="Localização"
           id="localizacao-title"
           title="Onde estamos"
-          lead="A unidade fica na região do Campo Grande, em Campinas/SP. O endereço completo é preenchido na versão oficial da página."
+          lead={`A unidade fica na região do ${brand.region}, em ${brand.city}. O endereço completo é preenchido na versão oficial da página.`}
         />
 
         <div className="loc">
@@ -62,7 +64,7 @@ export default function Localizacao() {
               <div>
                 <h3 className="loc__block-title">Horários</h3>
                 <ul className="loc__hours">
-                  {openingHours.rows.map((row) => (
+                  {brand.hoursRows.map((row) => (
                     <li key={row.label}>
                       <span>{row.label}</span>
                       <strong>{row.value}</strong>
@@ -95,7 +97,7 @@ export default function Localizacao() {
 
             <div className="demo-note">
               <Icon name="Info" size={16} />
-              <p>{openingHours.note} Endereço, referências e horários devem ser confirmados com a unidade.</p>
+              <p>{brand.hoursNote} Endereço, referências e horários devem ser confirmados com a unidade.</p>
             </div>
           </Reveal>
         </div>

@@ -1,0 +1,13 @@
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+
+import './admin.css'
+import AdminApp from './AdminApp.jsx'
+
+document.title = 'Painel administrativo | SkyFit'
+
+createRoot(document.getElementById('root')).render(
+  <StrictMode>
+    <AdminApp />
+  </StrictMode>,
+)

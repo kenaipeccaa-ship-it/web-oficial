@@ -14,35 +14,38 @@ import Footer from './components/Footer.jsx'
 import WhatsAppButton from './components/WhatsAppButton.jsx'
 import { NoticeProvider } from './lib/notice.jsx'
 import { CartProvider } from './lib/cart.jsx'
+import { ContentProvider } from './lib/content.jsx'
 import { useReveal } from './hooks/useReveal.js'
 
 export default function App() {
   useReveal()
 
   return (
-    <NoticeProvider>
-      <CartProvider>
-        <a className="skip-link" href="#conteudo">Pular para o conteúdo</a>
+    <ContentProvider>
+      <NoticeProvider>
+        <CartProvider>
+          <a className="skip-link" href="#conteudo">Pular para o conteúdo</a>
 
-        <Header />
+          <Header />
 
-        <main id="conteudo">
-          <Hero />
-          <Features />
-          <Modalidades />
-          <Estrutura />
-          <Planos />
-          <Store />
-          <AulaExperimental />
-          <Objetivos />
-          <Localizacao />
-          <FAQ />
-          <CTA />
-        </main>
+          <main id="conteudo">
+            <Hero />
+            <Features />
+            <Modalidades />
+            <Estrutura />
+            <Planos />
+            <Store />
+            <AulaExperimental />
+            <Objetivos />
+            <Localizacao />
+            <FAQ />
+            <CTA />
+          </main>
 
-        <Footer />
-        <WhatsAppButton />
-      </CartProvider>
-    </NoticeProvider>
+          <Footer />
+          <WhatsAppButton />
+        </CartProvider>
+      </NoticeProvider>
+    </ContentProvider>
   )
 }

@@ -2,7 +2,7 @@
 import { chromium } from './_playwright.mjs'
 
 const OUT = process.env.OUT || '/tmp/shots'
-const BASE = 'http://localhost:4173'
+const BASE = process.env.BASE || 'http://localhost:4173'
 const b = await chromium.launch()
 const fails = []
 const check = (ok, label) => { console.log(`${ok ? 'PASS' : 'FAIL'} — ${label}`); if (!ok) fails.push(label) }
@@ -13,7 +13,7 @@ const check = (ok, label) => { console.log(`${ok ? 'PASS' : 'FAIL'} — ${label}
   const page = await ctx.newPage()
   const errs = []
   page.on('pageerror', (e) => errs.push(e.message))
-  page.on('console', (m) => { if (m.type() === 'error' && !m.text().includes('ERR_CONNECTION')) errs.push(`console: ${m.text()}`) })
+  page.on('console', (m) => { if (m.type() === 'error' && !/ERR_CONNECTION|ERR_CERT|Failed to load resource/.test(m.text())) errs.push(`console: ${m.text()}`) })
 
   await page.goto(BASE, { waitUntil: 'load' })
   await page.waitForTimeout(400)

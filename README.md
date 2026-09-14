@@ -15,12 +15,22 @@ pela unidade.
 
 ```bash
 npm install
-npm run dev      # ambiente de desenvolvimento (http://localhost:5173)
-npm run build    # gera a versão de produção em dist/
-npm run preview  # serve o build de produção
+cp .env.example .env          # preencha as credenciais do painel (ver abaixo)
+
+npm run dev:all               # site + API juntos (http://localhost:5173)
+npm run build                 # gera a versão de produção em dist/
+npm start                     # produção: serve o site e a API na porta 3001
 ```
 
 Requer Node.js 20+.
+
+| Comando | Para quê |
+|---|---|
+| `npm run dev:all` | Sobe o Vite e a API juntos. É o modo normal de desenvolvimento. |
+| `npm run dev` | Só o site (sem API — o conteúdo cai no estático). |
+| `npm run dev:server` | Só a API, com recarga automática. |
+| `npm start` | Produção: um processo Node serve o `dist/`, a API e as imagens. |
+| `npm run admin:hash -- "senha"` | Gera o hash bcrypt da senha do painel. |
 
 ---
 
@@ -140,6 +150,145 @@ WhatsApp com os itens e as quantidades.
 
 ---
 
+## Painel administrativo
+
+Área privada em **`/admin`** para gerenciar fotos, produtos e informações da
+academia **sem editar código**. Visitantes não têm acesso: sem sessão válida a
+rota mostra a tela de login e a API administrativa responde `401`.
+
+### Como acessar
+
+1. Preencha o `.env` (ver [Variáveis de ambiente](#variáveis-de-ambiente)).
+2. Suba o projeto (`npm run dev:all` em desenvolvimento, `npm start` em produção).
+3. Abra `http://seu-dominio/admin` e entre com o e-mail e a senha do `.env`.
+
+A sessão dura 12 horas (configurável) e vive num cookie `httpOnly` — nenhum
+script da página consegue ler o token. "Sair" encerra a sessão também no
+servidor.
+
+### Galeria
+
+Painel → **Galeria**. Controla a seção *“Um espaço para você evoluir”* do site.
+
+- **Adicionar:** botão *Adicionar fotos* — aceita várias de uma vez (JPG, PNG,
+  WebP, AVIF ou GIF, até 8 MB cada).
+- **Excluir:** botão *Excluir* no card (pede confirmação; apaga também o arquivo).
+- **Substituir:** troca o arquivo mantendo posição, título e legenda.
+- **Publicar/Ocultar:** tira a foto do site sem apagá-la.
+- **Ordenar:** setas ↑ ↓ — a primeira foto ocupa o quadro grande da seção.
+- **Editar:** título e legenda exibidos sobre a foto.
+
+Tudo aparece no site imediatamente. Enquanto não houver **nenhuma** foto, a
+seção continua exibindo as artes ilustrativas de sempre.
+
+### Produtos
+
+Painel → **Produtos**. Controla a Exclusive Store.
+
+- **Novo produto / Editar:** nome, categoria, preço, descrição, arte e estoque.
+- **Preço:** aceita `129,90` ou `129.90`. **Em branco** exibe
+  *“Consulte a unidade”* no site.
+- **Estoque:** desmarcar *Em estoque* exibe **INDISPONÍVEL** e desativa a compra.
+- **Ativo no site:** desmarcado, o produto some da loja pública.
+- **Foto:** *Enviar/Trocar foto*; *Remover foto* volta a usar a arte do projeto.
+- **Excluir:** remove o produto e a imagem enviada.
+
+Na primeira execução o banco é semeado com os 12 produtos que já estavam em
+`src/data/products.js`, então a loja continua idêntica até você mexer.
+
+### Informações
+
+Painel → **Informações**. Nome, região, cidade, endereço, mapa, horários,
+WhatsApp, Instagram e os textos do hero e da loja. O WhatsApp salvo aqui passa
+a valer em **todos** os botões do site.
+
+### Onde ficam os dados
+
+```
+data/              ← criado no primeiro boot, fora do código (não versionado)
+├─ app.db          ← banco SQLite: produtos, fotos, informações, usuário, sessões
+└─ uploads/        ← imagens enviadas pelo painel, servidas em /uploads/...
+```
+
+O caminho é controlado por `DATA_DIR`. **Em produção aponte para um disco
+persistente** — se a pasta for efêmera, as fotos somem a cada deploy.
+
+A pasta `public/images/store/` continua funcionando para quem preferir versionar
+imagens junto do código, mas pelo painel é mais simples.
+
+### Segurança
+
+- Senha guardada como **hash bcrypt**; as credenciais vêm de variáveis de
+  ambiente e **nunca** entram no bundle do frontend (há um teste que verifica).
+- Sessão em cookie `httpOnly` + `SameSite=Lax` + `Secure` em produção, com
+  registro no banco — o logout invalida de verdade.
+- Toda escrita exige o cabeçalho `X-Admin-Request` (defesa contra CSRF).
+- Limite de 10 tentativas de login por IP a cada 15 minutos.
+- Upload: tipo validado, 8 MB por arquivo, nome aleatório no disco (sem usar o
+  nome enviado pelo navegador).
+- O bundle do painel só é baixado em `/admin`: quem visita o site não recebe
+  nem o código nem o CSS da área administrativa.
+
+### Variáveis de ambiente
+
+Copie `.env.example` para `.env`:
+
+| Variável | Obrigatória | Para quê |
+|---|---|---|
+| `ADMIN_EMAIL` | sim | E-mail de login do painel. |
+| `ADMIN_PASSWORD_HASH` | sim (produção) | Hash bcrypt da senha. Gere com `npm run admin:hash -- "sua-senha"`. |
+| `ADMIN_PASSWORD` | alternativa | Senha em texto puro. Só para desenvolvimento. |
+| `SESSION_SECRET` | sim (produção) | Segredo da sessão. Gere com `openssl rand -hex 32`. |
+| `DATA_DIR` | recomendada | Onde ficam `app.db` e `uploads/`. Padrão: `./data`. |
+| `PORT` | não | Porta do servidor. Padrão: `3001`. |
+| `SESSION_TTL_HOURS` | não | Duração da sessão. Padrão: `12`. |
+| `MAX_UPLOAD_BYTES` | não | Limite por imagem. Padrão: `8388608` (8 MB). |
+
+> Não defina `NODE_ENV` no `.env`: o Vite também lê esse arquivo e um
+> `NODE_ENV=development` faria o build de produção sair com a versão de debug do
+> React. O `npm start` já define `NODE_ENV=production`.
+
+Para trocar a senha depois, use **Conta → Alterar senha** no painel, ou gere um
+novo `ADMIN_PASSWORD_HASH` e reinicie o servidor (as sessões abertas caem).
+
+### Deploy
+
+O projeto virou uma aplicação Node: um único processo serve o site, a API e as
+imagens. Serve qualquer host com Node 20+ e disco persistente (VPS, Render,
+Railway, Fly.io, Docker).
+
+```bash
+npm ci
+npm run build          # gera dist/
+npm start              # NODE_ENV=production node server/index.js
+```
+
+Checklist de produção:
+
+1. `.env` preenchido com `ADMIN_EMAIL`, `ADMIN_PASSWORD_HASH` e `SESSION_SECRET`.
+2. `DATA_DIR` apontando para um **volume persistente** (ex.: `/var/data`).
+3. Servir atrás de HTTPS — o cookie de sessão usa `Secure` em produção e não
+   trafega em HTTP puro. Com proxy reverso (Nginx, Caddy, Traefik), encaminhe
+   `X-Forwarded-Proto`; o servidor já está com `trust proxy` ligado.
+4. Manter o processo vivo com `systemd`, `pm2` ou o supervisor do seu host.
+5. Backup: basta copiar a pasta do `DATA_DIR` (banco + imagens).
+
+Exemplo de bloco Nginx:
+
+```nginx
+location / {
+  proxy_pass http://127.0.0.1:3001;
+  proxy_set_header Host $host;
+  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  proxy_set_header X-Forwarded-Proto $scheme;
+  client_max_body_size 10M;   # precisa ser maior que MAX_UPLOAD_BYTES
+}
+```
+
+Hospedagem **estática** (Netlify, GitHub Pages, S3) continua funcionando para o
+site público — ele cai no conteúdo dos arquivos estáticos — mas **sem painel**,
+porque não há servidor para a API.
+
 ## Estrutura
 
 ```
@@ -156,9 +305,18 @@ src/
 │  ├─ store/             ← ProductCard, ProductModal, ProductFilters,
 │  │                       SearchProducts, Cart, CartItem, ProductArt, ProductMedia
 │  └─ ui/                ← Art, PhotoFrame, Modal, Reveal, Icon, SectionHeading, WhatsAppLink
+├─ admin/                ← painel /admin (bundle separado do site público)
+│  ├─ AdminApp · Login · Dashboard · api.js · admin.css
+│  └─ panels/            ← GalleryPanel, ProductsPanel, InfoPanel, AccountPanel
 ├─ hooks/                ← useReveal, useLockBodyScroll, useScrollSpy
-├─ lib/                  ← whatsapp (link), notice (avisos), cart (carrinho da loja)
+├─ lib/                  ← whatsapp (link), notice (avisos), cart (carrinho),
+│                          content (conteúdo vindo do painel, com fallback)
 └─ styles/               ← fonts, tokens, base, ui
+
+server/                  ← API e painel (Express + SQLite)
+├─ index.js · config.js · db.js · auth.js · uploads.js
+├─ routes/               ← auth, gallery, products, settings, public
+└─ cli/hash-password.js  ← gera o hash da senha do administrador
 ```
 
 **Stack:** React 18 + Vite + CSS moderno (custom properties, sem framework de UI) +
@@ -185,7 +343,11 @@ npm run preview          # em outro terminal
 node scripts/qa.mjs           # rolagem horizontal, console e screenshots em 9 larguras
 node scripts/interactions.mjs # menu mobile, modais, FAQ, formulário, WhatsApp e âncoras
 node scripts/store-tests.mjs  # filtros, busca, modal, carrinho, estoque e grade da loja
+node scripts/admin-tests.mjs  # login, logout, galeria, produtos, informações e reflexo no site
 ```
+
+Os scripts aceitam `BASE` para apontar o alvo, por exemplo
+`BASE=http://localhost:3001 node scripts/qa.mjs`.
 
 Testado em 360, 375, 390, 414, 430, 768, 1024, 1440 e 1920px: sem rolagem
 horizontal, sem sobreposição de texto e sem erros de JavaScript no console.
