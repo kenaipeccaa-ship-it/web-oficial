@@ -68,6 +68,19 @@ export const whatsappMessages = {
   horarios: 'Olá! Gostaria de saber os horários de funcionamento e das aulas.',
   localizacao: 'Olá! Gostaria de confirmar o endereço da unidade.',
   plano: (nome) => `Olá! Gostaria de saber mais sobre o plano ${titleCase(nome)}.`,
+
+  /* ---- Exclusive Store ---- */
+  loja: 'Olá! Gostaria de saber mais sobre os suplementos da loja.',
+  produto: (nome) =>
+    `Olá! Tenho interesse no produto ${nome}. Gostaria de saber mais informações e disponibilidade.`,
+  /**
+   * Pedido do carrinho.
+   * @param {{name: string, qty: number}[]} itens
+   */
+  pedido: (itens) => {
+    const linhas = itens.map((i) => `• ${i.qty}x ${i.name}`).join('\n')
+    return `Olá! Gostaria de fazer um pedido na loja:\n\n${linhas}\n\nPode me confirmar valores e disponibilidade?`
+  },
   modalidade: (nome) => `Olá! Gostaria de saber mais sobre as aulas de ${titleCase(nome)}.`,
 }
 
@@ -79,6 +92,7 @@ export const navLinks = [
   { label: 'A academia', href: '#academia' },
   { label: 'Modalidades', href: '#modalidades' },
   { label: 'Planos', href: '#planos' },
+  { label: 'Loja', href: '#loja' },
   { label: 'Aula experimental', href: '#experimental' },
   { label: 'Localização', href: '#localizacao' },
 ]

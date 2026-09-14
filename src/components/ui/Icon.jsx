@@ -2,15 +2,15 @@
 import {
   Activity, ArrowDown, ArrowRight, ArrowUpRight, Bike, CalendarCheck, Check, CheckCircle2,
   ChevronDown, Clock, Crown, Disc3, Dumbbell, Flame, Footprints, HeartPulse, ImageIcon, Info,
-  Instagram, Layers, LayoutGrid, MapPin, Menu, Music, Navigation, Phone, Play, Send, ShieldCheck,
-  Shuffle, Sparkles, TrendingUp, Waves, X, Zap,
+  Instagram, Layers, LayoutGrid, MapPin, Menu, Minus, Music, Navigation, Package, Phone, Play,
+  Plus, Search, Send, ShieldCheck, ShoppingBag, Shuffle, Sparkles, Trash2, TrendingUp, Waves, X, Zap,
 } from 'lucide-react'
 
 const registry = {
   Activity, ArrowDown, ArrowRight, ArrowUpRight, Bike, CalendarCheck, Check, CheckCircle2,
   ChevronDown, Clock, Crown, Disc3, Dumbbell, Flame, Footprints, HeartPulse, ImageIcon, Info,
-  Instagram, Layers, LayoutGrid, MapPin, Menu, Music, Navigation, Phone, Play, Send, ShieldCheck,
-  Shuffle, Sparkles, TrendingUp, Waves, X, Zap,
+  Instagram, Layers, LayoutGrid, MapPin, Menu, Minus, Music, Navigation, Package, Phone, Play,
+  Plus, Search, Send, ShieldCheck, ShoppingBag, Shuffle, Sparkles, Trash2, TrendingUp, Waves, X, Zap,
 }
 
 export function Icon({ name, size = 20, strokeWidth = 1.75, ...rest }) {

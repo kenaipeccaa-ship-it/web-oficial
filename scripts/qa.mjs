@@ -8,7 +8,9 @@ fs.mkdirSync(OUT, { recursive: true })
 
 const sizes = [
   { name: '360', w: 360, h: 780, mobile: true },
+  { name: '375', w: 375, h: 812, mobile: true },
   { name: '390', w: 390, h: 844, mobile: true },
+  { name: '414', w: 414, h: 896, mobile: true },
   { name: '430', w: 430, h: 932, mobile: true },
   { name: '768', w: 768, h: 1024, mobile: false },
   { name: '1024', w: 1024, h: 800, mobile: false },

@@ -4,6 +4,7 @@ import Features from './components/Features.jsx'
 import Modalidades from './components/Modalidades.jsx'
 import Estrutura from './components/Estrutura.jsx'
 import Planos from './components/Planos.jsx'
+import Store from './components/Store.jsx'
 import AulaExperimental from './components/AulaExperimental.jsx'
 import Objetivos from './components/Objetivos.jsx'
 import Localizacao from './components/Localizacao.jsx'
@@ -12,6 +13,7 @@ import CTA from './components/CTA.jsx'
 import Footer from './components/Footer.jsx'
 import WhatsAppButton from './components/WhatsAppButton.jsx'
 import { NoticeProvider } from './lib/notice.jsx'
+import { CartProvider } from './lib/cart.jsx'
 import { useReveal } from './hooks/useReveal.js'
 
 export default function App() {
@@ -19,25 +21,28 @@ export default function App() {
 
   return (
     <NoticeProvider>
-      <a className="skip-link" href="#conteudo">Pular para o conteúdo</a>
+      <CartProvider>
+        <a className="skip-link" href="#conteudo">Pular para o conteúdo</a>
 
-      <Header />
+        <Header />
 
-      <main id="conteudo">
-        <Hero />
-        <Features />
-        <Modalidades />
-        <Estrutura />
-        <Planos />
-        <AulaExperimental />
-        <Objetivos />
-        <Localizacao />
-        <FAQ />
-        <CTA />
-      </main>
+        <main id="conteudo">
+          <Hero />
+          <Features />
+          <Modalidades />
+          <Estrutura />
+          <Planos />
+          <Store />
+          <AulaExperimental />
+          <Objetivos />
+          <Localizacao />
+          <FAQ />
+          <CTA />
+        </main>
 
-      <Footer />
-      <WhatsAppButton />
+        <Footer />
+        <WhatsAppButton />
+      </CartProvider>
     </NoticeProvider>
   )
 }

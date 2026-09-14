@@ -93,7 +93,45 @@ musculacao: { pattern: 'plates', accent: 'red', glyph: 'dumbbell',
 O selo "imagem ilustrativa" some sozinho quando há foto. Se a foto falhar ao carregar, a
 arte volta a aparecer e o layout não quebra.
 
-### 6. SEO e imagem de compartilhamento
+### 6. Exclusive Store (loja de suplementos)
+
+Tudo o que a loja mostra vem de **um arquivo só**:
+[`src/data/products.js`](src/data/products.js).
+
+**Cadastrar um produto** — copie um bloco da lista `products` e ajuste:
+
+```js
+{
+  id: 'whey-concentrado',            // identificador único, sem espaços
+  name: 'Whey protein concentrado',  // nome no card e no modal
+  category: 'whey',                  // id de uma categoria (lista abaixo)
+  price: null,                       // número (149.9) ou null => "Consulte a unidade"
+  image: '/images/store/whey.jpg',   // '' usa a arte gerada pelo projeto
+  art: 'tub',                        // tub | bar | bottle | pills | shaker | sachet
+  description: '...',                // texto do modal
+  available: true,                   // false => "INDISPONÍVEL" e compra desativada
+}
+```
+
+| O que mudar | Onde |
+|---|---|
+| Preços | campo `price` de cada produto |
+| Fotos | campo `image` (ver [`public/images/store/README.md`](public/images/store/README.md)) |
+| Estoque | campo `available` |
+| Categorias dos filtros | lista `storeCategories`, no topo do mesmo arquivo |
+| Número do WhatsApp | `WHATSAPP_NUMBER` em `src/config/site.js` (o mesmo do site) |
+| Mensagens do WhatsApp | `whatsappMessages.produto` e `whatsappMessages.pedido` |
+
+**Adicionar uma categoria:** inclua `{ id: 'pos-treino', label: 'Pós-treino' }`
+em `storeCategories` e use esse mesmo `id` no campo `category` dos produtos.
+Para remover, apague a linha — a categoria some do filtro. A categoria
+`todos` é obrigatória e não filtra nada.
+
+**Carrinho:** fica em memória enquanto a página está aberta. Não há checkout,
+pagamento online nem qualquer dado bancário — o pedido vira uma mensagem de
+WhatsApp com os itens e as quantidades.
+
+### 7. SEO e imagem de compartilhamento
 
 - Título, descrição, Open Graph e Twitter Card estão em [`index.html`](index.html).
 - `public/og-image.png` (1200×630) pode ser regerado com `node scripts/make-og.mjs`.
@@ -109,13 +147,17 @@ src/
 ├─ config/
 │  ├─ site.js            ← conteúdo editável (contato, modalidades, planos, FAQ…)
 │  └─ media.js           ← slots de imagem: arte placeholder ou foto real
+├─ data/
+│  └─ products.js        ← produtos e categorias da Exclusive Store
 ├─ components/
 │  ├─ Header · Hero · Features · Modalidades · Estrutura · Planos
-│  ├─ AulaExperimental · Objetivos · Localizacao · FAQ · CTA · Footer
+│  ├─ Store · AulaExperimental · Objetivos · Localizacao · FAQ · CTA · Footer
 │  ├─ WhatsAppButton
+│  ├─ store/             ← ProductCard, ProductModal, ProductFilters,
+│  │                       SearchProducts, Cart, CartItem, ProductArt, ProductMedia
 │  └─ ui/                ← Art, PhotoFrame, Modal, Reveal, Icon, SectionHeading, WhatsAppLink
 ├─ hooks/                ← useReveal, useLockBodyScroll, useScrollSpy
-├─ lib/                  ← whatsapp (montagem do link), notice (avisos)
+├─ lib/                  ← whatsapp (link), notice (avisos), cart (carrinho da loja)
 └─ styles/               ← fonts, tokens, base, ui
 ```
 
@@ -140,12 +182,13 @@ para o seu backend, e-mail ou CRM em `onSubmit`
 ```bash
 npm run build
 npm run preview          # em outro terminal
-node scripts/qa.mjs           # rolagem horizontal, console e screenshots em 7 larguras
+node scripts/qa.mjs           # rolagem horizontal, console e screenshots em 9 larguras
 node scripts/interactions.mjs # menu mobile, modais, FAQ, formulário, WhatsApp e âncoras
+node scripts/store-tests.mjs  # filtros, busca, modal, carrinho, estoque e grade da loja
 ```
 
-Testado em 360, 390, 430, 768, 1024, 1440 e 1920px: sem rolagem horizontal, sem
-sobreposição de texto e sem erros de JavaScript no console.
+Testado em 360, 375, 390, 414, 430, 768, 1024, 1440 e 1920px: sem rolagem
+horizontal, sem sobreposição de texto e sem erros de JavaScript no console.
 
 Os scripts usam o Playwright instalado no ambiente; ajuste o caminho do `import` no topo
 de cada arquivo se o seu Playwright estiver em outro lugar (`npm i -D playwright` e
