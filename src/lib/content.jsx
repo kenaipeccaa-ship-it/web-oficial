@@ -78,6 +78,8 @@ export function useSiteInfo() {
         { label: openingHours.rows[1].label, value: pick(info?.hoursSaturday, openingHours.rows[1].value) },
         { label: openingHours.rows[2].label, value: pick(info?.hoursSunday, openingHours.rows[2].value) },
       ],
+      // Imagem de fundo do hero enviada pelo painel; vazio => arte padrão.
+      heroImage: info?.heroImage || '',
       heroTitleLine1: pick(info?.heroTitleLine1, 'Seu próximo nível'),
       heroTitleLine2: pick(info?.heroTitleLine2, 'começa aqui.'),
       heroLead: pick(

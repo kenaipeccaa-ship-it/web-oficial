@@ -73,4 +73,12 @@ export const api = {
   /* ---- informações ---- */
   settings: () => request('/admin/settings'),
   settingsSave: (info) => request('/admin/settings', { method: 'PUT', body: info }),
+
+  /* ---- aparência: imagem de fundo do hero ---- */
+  heroImageUpload: (file) => {
+    const fd = new FormData()
+    fd.append('image', file)
+    return request('/admin/settings/hero-image', { method: 'PUT', body: fd, isForm: true })
+  },
+  heroImageRemove: () => request('/admin/settings/hero-image', { method: 'DELETE' }),
 }

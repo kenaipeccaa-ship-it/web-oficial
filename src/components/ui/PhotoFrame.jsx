@@ -5,20 +5,33 @@ import { getMedia } from '../../config/media.js'
 /* ==========================================================================
    <PhotoFrame />
    // SUBSTITUIR PELAS FOTOS REAIS DA UNIDADE
-   Exibe a FOTO REAL quando "src" estiver preenchido em src/config/media.js.
-   Enquanto nao houver foto (ou se ela falhar ao carregar), exibe a arte
-   grafica e o selo "IMAGEM ILUSTRATIVA", deixando claro que a imagem NAO e
-   uma fotografia da unidade.
+   Ordem de prioridade da imagem:
+     1. "src" recebido por propriedade (imagem enviada pelo painel /admin);
+     2. "src" de src/config/media.js (foto versionada junto do codigo);
+     3. arte grafica gerada pelo projeto + selo "IMAGEM ILUSTRATIVA".
+   Se a imagem falhar ao carregar, cai para a arte — o layout nao quebra.
    ========================================================================== */
-export function PhotoFrame({ artKey, variant = 'card', className = '', badge = true, children }) {
+export function PhotoFrame({ artKey, src, variant = 'card', className = '', badge = true, alt, children }) {
   const cfg = getMedia(artKey)
   const [failed, setFailed] = useState(false)
-  const hasPhoto = Boolean(cfg.src) && !failed
+  const source = src || cfg.src
+  const hasPhoto = Boolean(source) && !failed
+
+  // Uma imagem nova precisa de uma tentativa nova, mesmo que a anterior falhe.
+  const imgKey = source || 'art'
 
   return (
     <div className={`photo ${className}`}>
       {hasPhoto ? (
-        <img className="photo__img" src={cfg.src} alt={cfg.alt} loading="lazy" decoding="async" onError={() => setFailed(true)} />
+        <img
+          key={imgKey}
+          className="photo__img"
+          src={source}
+          alt={alt || cfg.alt}
+          loading="lazy"
+          decoding="async"
+          onError={() => setFailed(true)}
+        />
       ) : (
         <Art artKey={artKey} variant={variant} />
       )}

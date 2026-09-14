@@ -365,6 +365,32 @@
 /* Na tabela os chips não são posicionados. */
 .adm-table .adm-chip { position: static; display: inline-block; }
 
+/* --------------------- Preview da imagem do topo ------------------------- */
+.adm-hero-preview {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 16 / 9;
+  max-height: 420px;
+  border-radius: 12px;
+  border: 1px solid var(--a-line-2);
+  background: var(--a-bg);
+  overflow: hidden;
+}
+.adm-hero-preview img { width: 100%; height: 100%; object-fit: cover; }
+
+.adm-hero-preview__empty {
+  display: grid;
+  gap: 0.3rem;
+  padding: 1.5rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--a-muted);
+}
+.adm-hero-preview__empty strong { color: var(--a-soft); font-size: 0.92rem; }
+
+.adm-hero-preview .adm-chip { top: 0.6rem; left: 0.6rem; }
+
 /* ------------------------------- Tabela --------------------------------- */
 .adm-table-wrap {
   border: 1px solid var(--a-line);

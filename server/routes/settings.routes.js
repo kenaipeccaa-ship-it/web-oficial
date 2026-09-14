@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import { defaultSiteInfo, getSetting, setSetting } from '../db.js'
 import { requireAdminHeader, requireAuth } from '../auth.js'
+import { publicUrl, removeUpload, upload } from '../uploads.js'
 
 const router = Router()
 router.use(requireAuth)
@@ -16,7 +17,11 @@ const FIELDS = {
 }
 
 router.get('/', (_req, res) => {
-  res.json({ info: { ...defaultSiteInfo, ...getSetting('site_info', {}) }, defaults: defaultSiteInfo })
+  res.json({
+    info: { ...defaultSiteInfo, ...getSetting('site_info', {}) },
+    defaults: defaultSiteInfo,
+    heroImage: getSetting('hero_image', ''),
+  })
 })
 
 router.put('/', requireAdminHeader, (req, res) => {
@@ -54,6 +59,33 @@ router.put('/', requireAdminHeader, (req, res) => {
 
   setSetting('site_info', next)
   res.json({ info: next })
+})
+
+/* ==========================================================================
+   IMAGEM DE FUNDO DO HERO
+   Guardada na mesma tabela de configurações (chave "hero_image") e enviada
+   pelo mesmo upload usado pela galeria e pelos produtos. Vazio => o site volta
+   a exibir a arte padrão do projeto.
+   ========================================================================== */
+
+/** Substitui a imagem atual; o arquivo anterior é apagado do disco. */
+router.put('/hero-image', requireAdminHeader, upload.single('image'), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'Nenhuma imagem enviada.' })
+
+  const previous = getSetting('hero_image', '')
+  setSetting('hero_image', publicUrl(req.file.filename))
+  if (previous.startsWith('/uploads/')) removeUpload(previous.replace('/uploads/', ''))
+
+  res.json({ heroImage: getSetting('hero_image', '') })
+})
+
+/** Remove a imagem: o hero volta à arte padrão. */
+router.delete('/hero-image', requireAdminHeader, (req, res) => {
+  const previous = getSetting('hero_image', '')
+  setSetting('hero_image', '')
+  if (previous.startsWith('/uploads/')) removeUpload(previous.replace('/uploads/', ''))
+
+  res.json({ heroImage: '' })
 })
 
 export default router

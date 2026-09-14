@@ -10,10 +10,17 @@ export default function Hero() {
 
   return (
     <section className="hero" id="inicio">
-      {/* Fundo: arte gráfica em tela cheia.
-          // SUBSTITUIR PELA FOTO REAL DA UNIDADE (ver src/config/media.js → hero) */}
+      {/* Fundo: imagem enviada pelo painel (/admin → Aparência). Sem imagem
+          cadastrada, exibe a arte gráfica padrão do projeto. */}
       <div className="hero__bg">
-        <PhotoFrame artKey="hero" variant="cover" badge={false} className="hero__photo" />
+        <PhotoFrame
+          artKey="hero"
+          src={brand.heroImage}
+          alt={brand.heroImage ? `Ambiente da ${brand.name} ${brand.unit}` : undefined}
+          variant="cover"
+          badge={false}
+          className="hero__photo"
+        />
         <div className="hero__scrim" aria-hidden="true" />
         <div className="bg-grid" aria-hidden="true" />
       </div>

@@ -29,7 +29,11 @@ router.get('/content', (_req, res) => {
       available: Boolean(r.available),
     }))
 
-  const info = { ...defaultSiteInfo, ...getSetting('site_info', {}) }
+  const info = {
+    ...defaultSiteInfo,
+    ...getSetting('site_info', {}),
+    heroImage: getSetting('hero_image', ''),
+  }
 
   // Sem cache: o que o painel altera precisa aparecer no site na hora.
   res.set('Cache-Control', 'no-store')

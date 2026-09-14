@@ -166,6 +166,19 @@ A sessão dura 12 horas (configurável) e vive num cookie `httpOnly` — nenhum
 script da página consegue ler o token. "Sair" encerra a sessão também no
 servidor.
 
+### Página inicial (imagem do topo)
+
+Painel → **Página inicial**. Controla a imagem de fundo do Hero — a primeira
+coisa que o visitante vê.
+
+- **Enviar / Alterar imagem:** substitui a imagem atual (JPG, PNG, WebP, AVIF
+  ou GIF, até 8 MB). O arquivo anterior é apagado do disco.
+- **Remover imagem:** o site volta a exibir a arte gráfica padrão do projeto.
+
+A área de visualização mostra sempre a imagem em vigor. A troca aparece no site
+na recarga seguinte. Sugestão: foto horizontal, 1920×1080 ou maior, sem
+informação importante no canto esquerdo (é onde fica o texto do topo).
+
 ### Galeria
 
 Painel → **Galeria**. Controla a seção *“Um espaço para você evoluir”* do site.
@@ -206,7 +219,8 @@ a valer em **todos** os botões do site.
 
 ```
 data/              ← criado no primeiro boot, fora do código (não versionado)
-├─ app.db          ← banco SQLite: produtos, fotos, informações, usuário, sessões
+├─ app.db          ← banco SQLite: produtos, fotos, informações, imagem do
+│                    topo, usuário e sessões
 └─ uploads/        ← imagens enviadas pelo painel, servidas em /uploads/...
 ```
 
@@ -307,7 +321,8 @@ src/
 │  └─ ui/                ← Art, PhotoFrame, Modal, Reveal, Icon, SectionHeading, WhatsAppLink
 ├─ admin/                ← painel /admin (bundle separado do site público)
 │  ├─ AdminApp · Login · Dashboard · api.js · admin.css
-│  └─ panels/            ← GalleryPanel, ProductsPanel, InfoPanel, AccountPanel
+│  └─ panels/            ← AppearancePanel, GalleryPanel, ProductsPanel,
+│                          InfoPanel, AccountPanel
 ├─ hooks/                ← useReveal, useLockBodyScroll, useScrollSpy
 ├─ lib/                  ← whatsapp (link), notice (avisos), cart (carrinho),
 │                          content (conteúdo vindo do painel, com fallback)
