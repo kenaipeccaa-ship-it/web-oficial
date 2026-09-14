@@ -285,10 +285,10 @@ function ArtBase({ artKey, variant = 'card', className = '' }) {
         <linearGradient id={`bg-${uid}`} x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="#0E1116" />
           <stop offset="68%" stopColor="#0A0C10" />
-          <stop offset="100%" stopColor={b} stopOpacity={soft ? 0.26 : 0.4} />
+          <stop offset="100%" stopColor={b} stopOpacity={soft ? 0.14 : 0.4} />
         </linearGradient>
         <radialGradient id={`glow-${uid}`} cx="78%" cy="16%" r="72%">
-          <stop offset="0%" stopColor={a} stopOpacity={soft ? 0.16 : 0.15} />
+          <stop offset="0%" stopColor={a} stopOpacity={soft ? 0.1 : 0.15} />
           <stop offset="100%" stopColor={a} stopOpacity="0" />
         </radialGradient>
         <radialGradient id={`vig-${uid}`} cx="50%" cy="45%" r="78%">

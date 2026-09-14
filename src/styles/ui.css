@@ -49,18 +49,18 @@
 .btn:active { transform: translateY(0) scale(0.985); }
 
 .btn--primary {
-  --btn-bg: var(--volt);
-  --btn-fg: #0a0c10;
-  --btn-bd: var(--volt);
-  box-shadow: var(--sh-volt);
+  --btn-bg: var(--red-500);
+  --btn-fg: #fff;
+  --btn-bd: var(--red-500);
+  box-shadow: var(--sh-red);
 }
-.btn--primary:hover { --btn-bg: #d5ff6a; box-shadow: 0 18px 48px -16px rgba(200, 250, 75, 0.6); }
+.btn--primary:hover { --btn-bg: var(--red-600); box-shadow: 0 18px 48px -16px rgba(227, 6, 19, 0.65); }
 
 .btn--ghost { --btn-bg: rgba(255, 255, 255, 0.04); backdrop-filter: blur(8px); }
-.btn--ghost:hover { --btn-bd: var(--volt-line); --btn-bg: rgba(200, 250, 75, 0.08); }
+.btn--ghost:hover { --btn-bd: var(--red-line); --btn-bg: rgba(255, 55, 66, 0.08); }
 
-.btn--wa { --btn-bg: #1faa5a; --btn-fg: #fff; --btn-bd: #1faa5a; }
-.btn--wa:hover { --btn-bg: #23c267; --btn-bd: #23c267; }
+.btn--wa { --btn-bg: var(--red-500); --btn-fg: #fff; --btn-bd: var(--red-500); }
+.btn--wa:hover { --btn-bg: var(--red-600); --btn-bd: var(--red-600); }
 
 .btn--lg { padding: 1.15rem 2rem; font-size: 0.9rem; }
 .btn--sm { padding: 0.68rem 1.1rem; font-size: 0.72rem; }
@@ -80,15 +80,15 @@
   font-weight: 700;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--volt);
+  color: var(--red);
 }
 
 .eyebrow__dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--volt);
-  box-shadow: 0 0 0 4px var(--volt-soft);
+  background: var(--red);
+  box-shadow: 0 0 0 4px var(--red-soft);
 }
 
 /* --------------------------- Titulo de secao ------------------------------ */
@@ -226,7 +226,7 @@
   backdrop-filter: blur(6px);
   transition: background-color var(--t-fast) var(--ease), transform var(--t-fast) var(--ease);
 }
-.modal__close:hover { background: rgba(200, 250, 75, 0.16); transform: rotate(90deg); }
+.modal__close:hover { background: rgba(255, 55, 66, 0.16); transform: rotate(90deg); }
 
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes pop {
@@ -252,7 +252,7 @@
   padding: 0.9rem 1rem;
   border-radius: var(--r-md);
   background: var(--ink-800);
-  border: 1px solid var(--volt-line);
+  border: 1px solid var(--red-line);
   box-shadow: var(--sh-lg);
   color: var(--text-soft);
   font-size: var(--fs-sm);
@@ -260,7 +260,7 @@
   pointer-events: auto;
   animation: toast-in var(--t-base) var(--ease-out) both;
 }
-.toast svg { color: var(--volt); flex: none; margin-top: 2px; }
+.toast svg { color: var(--red); flex: none; margin-top: 2px; }
 .toast p { flex: 1; }
 .toast__close { color: var(--text-muted); display: grid; place-items: center; padding: 2px; }
 .toast__close:hover { color: var(--text); }
@@ -284,7 +284,7 @@
   letter-spacing: 0.04em;
   color: var(--text-muted);
 }
-.pill svg { color: var(--volt); }
+.pill svg { color: var(--red); }
 
 /* -------------------------- Nota de demonstracao -------------------------- */
 .demo-note {
@@ -299,4 +299,4 @@
   font-size: var(--fs-sm);
   line-height: 1.55;
 }
-.demo-note svg { color: var(--volt); flex: none; margin-top: 3px; }
+.demo-note svg { color: var(--red); flex: none; margin-top: 3px; }

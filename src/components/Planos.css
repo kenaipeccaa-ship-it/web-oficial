@@ -4,7 +4,7 @@
   width: 700px; height: 700px;
   left: 50%; top: -300px;
   transform: translateX(-50%);
-  background: rgba(76, 134, 255, 0.12);
+  background: rgba(227, 6, 19, 0.12);
 }
 
 .plans {
@@ -25,11 +25,11 @@
 }
 
 .plan--featured {
-  border-color: var(--volt-line);
-  background: linear-gradient(180deg, rgba(200, 250, 75, 0.09), rgba(255, 255, 255, 0.02) 45%);
-  box-shadow: 0 30px 70px -40px rgba(200, 250, 75, 0.5);
+  border-color: var(--red-line);
+  background: linear-gradient(180deg, rgba(255, 55, 66, 0.09), rgba(255, 255, 255, 0.02) 45%);
+  box-shadow: 0 30px 70px -40px rgba(255, 55, 66, 0.5);
 }
-.plan--featured:hover { border-color: rgba(200, 250, 75, 0.55); }
+.plan--featured:hover { border-color: rgba(255, 55, 66, 0.55); }
 
 .plan__badge {
   position: absolute;
@@ -37,15 +37,15 @@
   transform: translate(-50%, -50%);
   padding: 0.32rem 0.8rem;
   border-radius: var(--r-pill);
-  background: var(--volt);
-  color: #0a0c10;
+  background: var(--red-500);
+  color: #fff;
   font-family: var(--font-display);
   font-size: 0.56rem;
   font-weight: 800;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   white-space: nowrap;
-  box-shadow: var(--sh-volt);
+  box-shadow: var(--sh-red);
   max-width: calc(100% - 2rem);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -58,10 +58,10 @@
   border-radius: 13px;
   border: 1px solid var(--line-strong);
   background: var(--surface-2);
-  color: var(--volt);
+  color: var(--red);
   margin-bottom: 0.9rem;
 }
-.plan--featured .plan__icon { background: var(--volt); color: #0a0c10; border-color: var(--volt); }
+.plan--featured .plan__icon { background: var(--red-500); color: #fff; border-color: var(--red-500); }
 
 .plan__name { font-size: 1.35rem; text-transform: uppercase; }
 .plan__text { margin-top: 0.45rem; color: var(--text-muted); font-size: 0.94rem; }
@@ -88,7 +88,7 @@
   font-weight: 800;
   letter-spacing: 0.01em;
   text-transform: uppercase;
-  color: var(--volt);
+  color: var(--red);
 }
 
 .plan__items { display: grid; gap: 0.75rem; flex: 1; }
@@ -102,7 +102,7 @@
   font-size: 0.9rem;
 }
 .plan__items li:last-child { border-bottom: 0; padding-bottom: 0; }
-.plan__items svg { color: var(--volt); margin-top: 4px; grid-row: span 2; }
+.plan__items svg { color: var(--red); margin-top: 4px; grid-row: span 2; }
 .plan__item-label { color: var(--text); }
 .plan__item-value { color: var(--text-faint); font-size: 0.82rem; }
 

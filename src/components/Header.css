@@ -11,8 +11,8 @@
   z-index: 2;
   overflow: hidden;
   max-height: 34px;
-  background: linear-gradient(90deg, rgba(200, 250, 75, 0.12), rgba(200, 250, 75, 0.03));
-  border-bottom: 1px solid rgba(200, 250, 75, 0.16);
+  background: linear-gradient(90deg, rgba(255, 55, 66, 0.12), rgba(255, 55, 66, 0.03));
+  border-bottom: 1px solid rgba(255, 55, 66, 0.16);
   transition: max-height var(--t-base) var(--ease), opacity var(--t-base) var(--ease);
 }
 .header.is-scrolled .header__demo { max-height: 0; opacity: 0; border-bottom-color: transparent; }
@@ -27,7 +27,7 @@
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--volt);
+  color: var(--red);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -71,9 +71,9 @@
   place-items: center;
   width: 40px; height: 40px;
   border-radius: 12px;
-  background: var(--volt);
-  color: #0a0c10;
-  box-shadow: var(--sh-volt);
+  background: var(--red-500);
+  color: #fff;
+  box-shadow: var(--sh-red);
   transition: transform var(--t-base) var(--ease);
 }
 .logo:hover .logo__mark { transform: translateY(-2px) rotate(-4deg); }
@@ -89,7 +89,7 @@
   font-size: 0.58rem;
   font-weight: 700;
   letter-spacing: 0.2em;
-  color: var(--volt);
+  color: var(--red);
   margin-top: 3px;
 }
 
@@ -117,7 +117,7 @@
   width: 0;
   height: 2px;
   border-radius: 2px;
-  background: var(--volt);
+  background: var(--red);
   transform: translateX(-50%);
   transition: width var(--t-base) var(--ease);
 }
@@ -140,7 +140,7 @@
   background: var(--surface-2);
   transition: border-color var(--t-fast) var(--ease), background-color var(--t-fast) var(--ease);
 }
-.burger:hover { border-color: var(--volt-line); }
+.burger:hover { border-color: var(--red-line); }
 
 .burger__box { display: block; width: 18px; height: 12px; position: relative; }
 .burger__box span {
@@ -210,15 +210,15 @@
   transition: color var(--t-fast) var(--ease), padding-left var(--t-base) var(--ease);
 }
 .mmenu__link svg { margin-left: auto; color: var(--text-faint); transition: color var(--t-fast) var(--ease), transform var(--t-base) var(--ease); }
-.mmenu__link:hover { color: var(--volt); padding-left: 0.6rem; }
-.mmenu__link:hover svg { color: var(--volt); transform: translate(3px, -3px); }
+.mmenu__link:hover { color: var(--red); padding-left: 0.6rem; }
+.mmenu__link:hover svg { color: var(--red); transform: translate(3px, -3px); }
 
 .mmenu__num {
   flex: none;
   font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.14em;
-  color: var(--volt);
+  color: var(--red);
   opacity: 0.75;
 }
 
@@ -231,7 +231,7 @@
   font-size: var(--fs-sm);
   color: var(--text-muted);
 }
-.mmenu__note svg { color: var(--volt); }
+.mmenu__note svg { color: var(--red); }
 
 /* ------------------------------ Desktop ---------------------------------- */
 @media (min-width: 640px) {

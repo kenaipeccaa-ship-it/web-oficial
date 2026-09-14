@@ -21,7 +21,7 @@
     background-color var(--t-base) var(--ease), box-shadow var(--t-base) var(--ease);
 }
 .goal:hover {
-  border-color: var(--volt-line);
+  border-color: var(--red-line);
   transform: translateY(-4px);
   box-shadow: var(--sh-md);
 }
@@ -57,7 +57,7 @@
   color: var(--text-faint);
   transition: color var(--t-fast) var(--ease), transform var(--t-base) var(--ease);
 }
-.goal:hover .goal__icon { color: var(--volt); transform: translate(3px, -3px); }
+.goal:hover .goal__icon { color: var(--red); transform: translate(3px, -3px); }
 
 .objetivos__foot {
   margin-top: clamp(1.75rem, 3.5vw, 2.5rem);

@@ -1,6 +1,6 @@
 /* ==========================================================================
    DESIGN TOKENS — identidade visual propria da demonstracao
-   Estetica: fitness premium, base escura, acento "volt" (verde-limão).
+   Estetica: fitness premium, base preto/grafite, acento vermelho (#e30613).
    ========================================================================== */
 
 :root {
@@ -19,15 +19,19 @@
   --text-muted: #8e97a7;
   --text-faint: #67707f;
 
-  /* ---- Cores: acento ---- */
-  --volt: #c8fa4b;
-  --volt-600: #a9e025;
-  --volt-700: #85b317;
-  --volt-soft: rgba(200, 250, 75, 0.14);
-  --volt-line: rgba(200, 250, 75, 0.32);
-  --sky: #4c86ff;
-  --grape: #9b7bff;
-  --cyan: #3fe0d0;
+  /* ---- Cores: acento ----
+     Vermelho da marca em #e30613 para preenchimentos sólidos e um tom mais
+     claro (#ff3742) para textos, ícones e linhas sobre o fundo escuro —
+     o tom claro garante o contraste mínimo de leitura em texto pequeno. */
+  --red: #ff3742;
+  --red-500: #e30613;
+  --red-600: #c0040f;
+  --red-700: #8e0009;
+  --red-soft: rgba(255, 55, 66, 0.14);
+  --red-line: rgba(255, 55, 66, 0.32);
+  --ember: #ff7a45;
+  --steel: #a8b4c8;
+  --slate: #7c8aa8;
 
   /* ---- Linhas e superficies ---- */
   --line: rgba(255, 255, 255, 0.08);
@@ -64,7 +68,7 @@
   --sh-sm: 0 2px 10px rgba(0, 0, 0, 0.28);
   --sh-md: 0 18px 44px -22px rgba(0, 0, 0, 0.85);
   --sh-lg: 0 40px 90px -40px rgba(0, 0, 0, 0.95);
-  --sh-volt: 0 14px 40px -14px rgba(200, 250, 75, 0.45);
+  --sh-red: 0 14px 40px -14px rgba(227, 6, 19, 0.55);
 
   /* ---- Movimento ---- */
   --ease: cubic-bezier(0.22, 0.65, 0.28, 1);

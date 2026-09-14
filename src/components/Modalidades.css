@@ -46,9 +46,9 @@
   place-items: center;
   width: 46px; height: 46px;
   border-radius: 14px;
-  background: var(--volt);
-  color: #0a0c10;
-  box-shadow: var(--sh-volt);
+  background: var(--red-500);
+  color: #fff;
+  box-shadow: var(--sh-red);
   transition: transform var(--t-base) var(--ease);
 }
 .mod:hover .mod__icon { transform: translateY(-4px) rotate(-6deg); }
@@ -76,11 +76,11 @@
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--volt);
+  color: var(--red);
   border-bottom: 1px solid transparent;
   transition: border-color var(--t-fast) var(--ease), gap var(--t-base) var(--ease);
 }
-.mod__more:hover { border-bottom-color: var(--volt-line); }
+.mod__more:hover { border-bottom-color: var(--red-line); }
 .mod__more:hover .btn__arrow { transform: translateX(4px); }
 
 .mods__note { margin-top: clamp(1.5rem, 3vw, 2.25rem); }
@@ -115,8 +115,8 @@
   gap: 0.4rem;
   padding: 0.32rem 0.7rem;
   border-radius: var(--r-pill);
-  background: var(--volt);
-  color: #0a0c10;
+  background: var(--red-500);
+  color: #fff;
   font-size: 0.625rem;
   font-weight: 800;
   letter-spacing: 0.12em;
@@ -163,7 +163,7 @@
   font-size: 0.94rem;
   color: var(--text-soft);
 }
-.mod-modal__topics svg { color: var(--volt); flex: none; margin-top: 4px; }
+.mod-modal__topics svg { color: var(--red); flex: none; margin-top: 4px; }
 
 .mod-modal__actions { display: grid; gap: 0.6rem; }
 

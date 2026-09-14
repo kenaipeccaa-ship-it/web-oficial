@@ -12,7 +12,7 @@
   inset: 0;
   background:
     linear-gradient(to bottom, var(--ink-950), rgba(6, 7, 10, 0.7) 28%, rgba(6, 7, 10, 0.82) 72%, var(--ink-950)),
-    radial-gradient(80% 60% at 20% 30%, rgba(200, 250, 75, 0.1), transparent 70%);
+    radial-gradient(80% 60% at 20% 30%, rgba(255, 55, 66, 0.1), transparent 70%);
 }
 
 .experimental__inner {
@@ -46,7 +46,7 @@
   font-size: 0.94rem;
   color: var(--text-soft);
 }
-.experimental__points svg { color: var(--volt); flex: none; margin-top: 3px; }
+.experimental__points svg { color: var(--red); flex: none; margin-top: 3px; }
 
 /* ------------------------------- Formulário ------------------------------ */
 .form-card {
@@ -91,9 +91,9 @@
 .field input:focus,
 .field select:focus {
   outline: none;
-  border-color: var(--volt);
-  background: rgba(200, 250, 75, 0.05);
-  box-shadow: 0 0 0 3px rgba(200, 250, 75, 0.14);
+  border-color: var(--red);
+  background: rgba(255, 55, 66, 0.05);
+  box-shadow: 0 0 0 3px rgba(255, 55, 66, 0.14);
 }
 .field input[aria-invalid='true'],
 .field select[aria-invalid='true'] { border-color: #ff6b6b; }
@@ -131,9 +131,9 @@
   place-items: center;
   width: 64px; height: 64px;
   border-radius: 50%;
-  background: var(--volt-soft);
-  border: 1px solid var(--volt-line);
-  color: var(--volt);
+  background: var(--red-soft);
+  border: 1px solid var(--red-line);
+  color: var(--red);
   margin-bottom: 0.4rem;
 }
 .form-done__title { font-size: 1.8rem; text-transform: uppercase; }

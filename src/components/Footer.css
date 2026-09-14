@@ -24,7 +24,7 @@
   font-size: var(--fs-sm);
   color: var(--text-muted);
 }
-.footer__city svg { color: var(--volt); }
+.footer__city svg { color: var(--red); }
 
 .footer__about {
   margin-top: 1rem;
@@ -51,7 +51,7 @@
   color: var(--text-soft);
   transition: color var(--t-fast) var(--ease), transform var(--t-fast) var(--ease);
 }
-.footer__nav a:hover { color: var(--volt); transform: translateX(3px); }
+.footer__nav a:hover { color: var(--red); transform: translateX(3px); }
 
 .footer__contact ul { display: grid; gap: 0.6rem; }
 
@@ -71,8 +71,8 @@
     transform var(--t-fast) var(--ease);
 }
 .footer__contact-link:not(.footer__contact-link--static):hover {
-  border-color: var(--volt-line);
-  background: rgba(200, 250, 75, 0.06);
+  border-color: var(--red-line);
+  background: rgba(255, 55, 66, 0.06);
   transform: translateY(-2px);
 }
 .footer__contact-link small {
@@ -90,7 +90,7 @@
   border-radius: 10px;
   background: var(--ink-800);
   border: 1px solid var(--line);
-  color: var(--volt);
+  color: var(--red);
 }
 
 .footer__bottom {
@@ -104,7 +104,7 @@
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--volt);
+  color: var(--red);
 }
 .footer__legal {
   font-size: 0.74rem !important;

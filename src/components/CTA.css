@@ -14,7 +14,7 @@
   inset: 0;
   background:
     linear-gradient(to bottom, var(--ink-950), rgba(6, 7, 10, 0.66) 34%, rgba(6, 7, 10, 0.76) 66%, var(--ink-950)),
-    radial-gradient(60% 60% at 50% 50%, rgba(200, 250, 75, 0.12), transparent 72%);
+    radial-gradient(60% 60% at 50% 50%, rgba(255, 55, 66, 0.12), transparent 72%);
 }
 
 .cta__inner { display: grid; justify-items: center; }
@@ -30,7 +30,7 @@
 .cta__title span { display: block; }
 .cta__title-accent {
   color: transparent;
-  background: linear-gradient(100deg, var(--volt) 5%, #f0ffc4 50%, var(--volt-600) 95%);
+  background: linear-gradient(100deg, var(--red) 5%, #ff6f78 50%, var(--red-500) 95%);
   -webkit-background-clip: text;
   background-clip: text;
 }

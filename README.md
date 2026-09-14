@@ -86,7 +86,7 @@ Para usar as fotos reais:
    [`src/config/media.js`](src/config/media.js):
 
 ```js
-musculacao: { pattern: 'plates', accent: 'volt', glyph: 'dumbbell',
+musculacao: { pattern: 'plates', accent: 'red', glyph: 'dumbbell',
               src: '/fotos/musculacao.jpg', alt: 'Área de musculação da unidade' },
 ```
 

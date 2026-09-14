@@ -60,10 +60,10 @@ h1, h2, h3, h4 {
 
 p { text-wrap: pretty; }
 
-::selection { background: var(--volt); color: #0a0c10; }
+::selection { background: var(--red-500); color: #fff; }
 
 :focus-visible {
-  outline: 2px solid var(--volt);
+  outline: 2px solid var(--red);
   outline-offset: 3px;
   border-radius: 4px;
 }
@@ -88,8 +88,8 @@ p { text-wrap: pretty; }
   left: 1rem;
   top: -100px;
   z-index: calc(var(--z-header) + 10);
-  background: var(--volt);
-  color: #0a0c10;
+  background: var(--red-500);
+  color: #fff;
   font-weight: 700;
   padding: 0.7rem 1.1rem;
   border-radius: var(--r-sm);

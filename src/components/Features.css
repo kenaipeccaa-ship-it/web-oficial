@@ -3,7 +3,7 @@
 .features__glow {
   width: 620px; height: 620px;
   top: -220px; right: -180px;
-  background: rgba(200, 250, 75, 0.1);
+  background: rgba(255, 55, 66, 0.1);
 }
 
 .features__grid {
@@ -31,19 +31,19 @@
   color: var(--text-faint);
   transition: color var(--t-base) var(--ease);
 }
-.feature:hover .feature__index { color: var(--volt); }
+.feature:hover .feature__index { color: var(--red); }
 
 .feature__icon {
   display: grid;
   place-items: center;
   width: 48px; height: 48px;
   border-radius: 14px;
-  border: 1px solid var(--volt-line);
-  background: var(--volt-soft);
-  color: var(--volt);
+  border: 1px solid var(--red-line);
+  background: var(--red-soft);
+  color: var(--red);
   transition: transform var(--t-base) var(--ease), background-color var(--t-base) var(--ease);
 }
-.feature:hover .feature__icon { transform: translateY(-3px); background: rgba(200, 250, 75, 0.2); }
+.feature:hover .feature__icon { transform: translateY(-3px); background: rgba(255, 55, 66, 0.2); }
 
 .feature__title {
   font-size: 1.05rem;
@@ -58,7 +58,7 @@
   left: 0; bottom: 0;
   height: 2px;
   width: 0;
-  background: linear-gradient(90deg, var(--volt), transparent);
+  background: linear-gradient(90deg, var(--red), transparent);
   transition: width var(--t-slow) var(--ease-out);
 }
 .feature:hover .feature__line { width: 100%; }
