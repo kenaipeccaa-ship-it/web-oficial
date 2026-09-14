@@ -38,7 +38,21 @@ export function ensureAdminUser() {
     console.log('[auth] senha do administrador atualizada pelo ambiente')
   }
 
+  /**
+   * O administrador é UM só, definido por ADMIN_EMAIL. Ao trocar o e-mail, a
+   * conta anterior continuaria no banco com a senha antiga e ainda conseguiria
+   * entrar — dois acessos validos ao painel. Aqui as contas que nao sao a do
+   * ambiente sao removidas (as sessoes delas caem junto, por ON DELETE CASCADE).
+   */
+  const removeOtherAdmins = () => {
+    const others = db.prepare('SELECT id, email FROM admin_users WHERE email <> ?').all(ADMIN_EMAIL)
+    if (others.length === 0) return
+    db.prepare('DELETE FROM admin_users WHERE email <> ?').run(ADMIN_EMAIL)
+    others.forEach((o) => console.log(`[auth] conta administrativa antiga removida: ${o.email}`))
+  }
+
   if (existing) {
+    removeOtherAdmins()
     // Rotação por hash: troca só quando o hash do ambiente é outro.
     if (ADMIN_PASSWORD_HASH && ADMIN_PASSWORD_HASH !== existing.password_hash) {
       applyNewPassword(existing.id, ADMIN_PASSWORD_HASH)
@@ -60,6 +74,7 @@ export function ensureAdminUser() {
   }
   db.prepare('INSERT INTO admin_users (email, password_hash) VALUES (?, ?)').run(ADMIN_EMAIL, hash)
   console.log(`[auth] administrador criado: ${ADMIN_EMAIL}`)
+  removeOtherAdmins()
 }
 
 /* ------------------------------- Sessões -------------------------------- */
