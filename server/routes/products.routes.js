@@ -1,7 +1,7 @@
 import { Router } from 'express'
-import { db } from '../db.js'
+import { q } from '../db.js'
 import { requireAdminHeader, requireAuth } from '../auth.js'
-import { publicUrl, removeUpload, upload } from '../uploads.js'
+import { removeUpload, saveUpload, upload } from '../uploads.js'
 import { storeCategories } from '../../src/data/products.js'
 
 const router = Router()
@@ -10,23 +10,26 @@ router.use(requireAuth)
 const CATEGORY_IDS = storeCategories.filter((c) => c.id !== 'todos').map((c) => c.id)
 const ART_KEYS = ['tub', 'bar', 'bottle', 'pills', 'shaker', 'sachet']
 
+/** Imagem gravada pelo painel: caminho local ou URL absoluta do Blob. */
+const isUploaded = (image) => Boolean(image) && (image.startsWith('/uploads/') || /^https?:\/\//i.test(image))
+
 const toApi = (r) => ({
   id: r.id,
   slug: r.slug,
   name: r.name,
   category: r.category,
-  price: r.price_cents === null ? null : r.price_cents / 100,
-  priceCents: r.price_cents,
+  price: r.price_cents === null ? null : Number(r.price_cents) / 100,
+  priceCents: r.price_cents === null ? null : Number(r.price_cents),
   description: r.description,
   image: r.image,
-  imageIsUpload: r.image.startsWith('/uploads/'),
+  imageIsUpload: isUploaded(r.image),
   art: r.art,
   available: Boolean(r.available),
   active: Boolean(r.active),
   position: r.position,
 })
 
-const listAll = () => db.prepare('SELECT * FROM products ORDER BY position ASC, id ASC').all().map(toApi)
+const listAll = async () => (await q.all('SELECT * FROM products ORDER BY position ASC, id ASC')).map(toApi)
 
 const slugify = (t) =>
   String(t)
@@ -37,11 +40,11 @@ const slugify = (t) =>
     .replace(/^-+|-+$/g, '')
     .slice(0, 60) || 'produto'
 
-function uniqueSlug(base, ignoreId = null) {
+async function uniqueSlug(base, ignoreId = null) {
   let slug = base
   let n = 2
   for (;;) {
-    const row = db.prepare('SELECT id FROM products WHERE slug = ?').get(slug)
+    const row = await q.get('SELECT id FROM products WHERE slug = ?', slug)
     if (!row || row.id === ignoreId) return slug
     slug = `${base}-${n}`
     n += 1
@@ -63,9 +66,10 @@ function parseBody(body, current = null) {
   if (!ART_KEYS.includes(art)) errors.push('Arte inválida.')
 
   let priceCents = current?.price_cents ?? null
+  if (priceCents !== null) priceCents = Number(priceCents)
   if (body.price !== undefined) {
     const raw = body.price
-    if (raw === null || raw === '' ) {
+    if (raw === null || raw === '') {
       priceCents = null // sem preço => "Consulte a unidade"
     } else {
       const num = typeof raw === 'number' ? raw : Number(String(raw).replace(/\./g, '').replace(',', '.'))
@@ -81,84 +85,109 @@ function parseBody(body, current = null) {
   return { errors, name, category, art, priceCents, description, available, active }
 }
 
-router.get('/', (_req, res) =>
-  res.json({ products: listAll(), categories: storeCategories, artKeys: ART_KEYS }),
-)
-
-router.post('/', requireAdminHeader, (req, res) => {
-  const d = parseBody(req.body ?? {})
-  if (d.errors.length) return res.status(400).json({ error: d.errors[0], errors: d.errors })
-
-  const maxPos = db.prepare('SELECT COALESCE(MAX(position), -1) AS m FROM products').get().m
-  const info = db
-    .prepare(
-      `INSERT INTO products (slug, name, category, price_cents, description, image, art, available, active, position)
-       VALUES (?, ?, ?, ?, ?, '', ?, ?, ?, ?)`,
-    )
-    .run(uniqueSlug(slugify(d.name)), d.name, d.category, d.priceCents, d.description, d.art, d.available, d.active, maxPos + 1)
-
-  res.status(201).json({ products: listAll(), id: info.lastInsertRowid })
+router.get('/', async (_req, res, next) => {
+  try {
+    res.json({ products: await listAll(), categories: storeCategories, artKeys: ART_KEYS })
+  } catch (err) {
+    next(err)
+  }
 })
 
-router.patch('/:id', requireAdminHeader, (req, res) => {
-  const row = db.prepare('SELECT * FROM products WHERE id = ?').get(req.params.id)
-  if (!row) return res.status(404).json({ error: 'Produto não encontrado.' })
+router.post('/', requireAdminHeader, async (req, res, next) => {
+  try {
+    const d = parseBody(req.body ?? {})
+    if (d.errors.length) return res.status(400).json({ error: d.errors[0], errors: d.errors })
 
-  const d = parseBody(req.body ?? {}, row)
-  if (d.errors.length) return res.status(400).json({ error: d.errors[0], errors: d.errors })
+    const { m } = await q.get('SELECT COALESCE(MAX(position), -1) AS m FROM products')
+    const info = await q.run(
+      `INSERT INTO products (slug, name, category, price_cents, description, image, art, available, active, position)
+       VALUES (?, ?, ?, ?, ?, '', ?, ?, ?, ?)`,
+      await uniqueSlug(slugify(d.name)), d.name, d.category, d.priceCents, d.description,
+      d.art, d.available, d.active, Number(m) + 1,
+    )
 
-  const slug = req.body.name !== undefined && d.name !== row.name ? uniqueSlug(slugify(d.name), row.id) : row.slug
+    res.status(201).json({ products: await listAll(), id: info.lastInsertRowid })
+  } catch (err) {
+    next(err)
+  }
+})
 
-  db.prepare(
-    `UPDATE products SET slug = ?, name = ?, category = ?, price_cents = ?, description = ?,
-     art = ?, available = ?, active = ?, updated_at = datetime('now') WHERE id = ?`,
-  ).run(slug, d.name, d.category, d.priceCents, d.description, d.art, d.available, d.active, row.id)
+router.patch('/:id', requireAdminHeader, async (req, res, next) => {
+  try {
+    const row = await q.get('SELECT * FROM products WHERE id = ?', req.params.id)
+    if (!row) return res.status(404).json({ error: 'Produto não encontrado.' })
 
-  res.json({ products: listAll() })
+    const d = parseBody(req.body ?? {}, row)
+    if (d.errors.length) return res.status(400).json({ error: d.errors[0], errors: d.errors })
+
+    const slug =
+      req.body.name !== undefined && d.name !== row.name ? await uniqueSlug(slugify(d.name), row.id) : row.slug
+
+    await q.run(
+      `UPDATE products SET slug = ?, name = ?, category = ?, price_cents = ?, description = ?,
+       art = ?, available = ?, active = ?, updated_at = datetime('now') WHERE id = ?`,
+      slug, d.name, d.category, d.priceCents, d.description, d.art, d.available, d.active, row.id,
+    )
+
+    res.json({ products: await listAll() })
+  } catch (err) {
+    next(err)
+  }
 })
 
 /* Trocar a imagem do produto. */
-router.put('/:id/image', requireAdminHeader, upload.single('image'), (req, res) => {
-  const row = db.prepare('SELECT * FROM products WHERE id = ?').get(req.params.id)
-  if (!row) {
-    if (req.file) removeUpload(req.file.filename)
-    return res.status(404).json({ error: 'Produto não encontrado.' })
+router.put('/:id/image', requireAdminHeader, upload.single('image'), async (req, res, next) => {
+  try {
+    const row = await q.get('SELECT * FROM products WHERE id = ?', req.params.id)
+    if (!row) return res.status(404).json({ error: 'Produto não encontrado.' })
+    if (!req.file) return res.status(400).json({ error: 'Nenhuma imagem enviada.' })
+
+    const previous = row.image
+    const url = await saveUpload(req.file)
+    await q.run("UPDATE products SET image = ?, updated_at = datetime('now') WHERE id = ?", url, row.id)
+    if (isUploaded(previous)) await removeUpload(previous)
+
+    res.json({ products: await listAll() })
+  } catch (err) {
+    next(err)
   }
-  if (!req.file) return res.status(400).json({ error: 'Nenhuma imagem enviada.' })
-
-  const previous = row.image
-  db.prepare("UPDATE products SET image = ?, updated_at = datetime('now') WHERE id = ?")
-    .run(publicUrl(req.file.filename), row.id)
-  if (previous.startsWith('/uploads/')) removeUpload(previous.replace('/uploads/', ''))
-
-  res.json({ products: listAll() })
 })
 
 /* Remover a imagem: volta a exibir a arte gerada pelo projeto. */
-router.delete('/:id/image', requireAdminHeader, (req, res) => {
-  const row = db.prepare('SELECT * FROM products WHERE id = ?').get(req.params.id)
-  if (!row) return res.status(404).json({ error: 'Produto não encontrado.' })
+router.delete('/:id/image', requireAdminHeader, async (req, res, next) => {
+  try {
+    const row = await q.get('SELECT * FROM products WHERE id = ?', req.params.id)
+    if (!row) return res.status(404).json({ error: 'Produto não encontrado.' })
 
-  db.prepare("UPDATE products SET image = '', updated_at = datetime('now') WHERE id = ?").run(row.id)
-  if (row.image.startsWith('/uploads/')) removeUpload(row.image.replace('/uploads/', ''))
-  res.json({ products: listAll() })
+    await q.run("UPDATE products SET image = '', updated_at = datetime('now') WHERE id = ?", row.id)
+    if (isUploaded(row.image)) await removeUpload(row.image)
+    res.json({ products: await listAll() })
+  } catch (err) {
+    next(err)
+  }
 })
 
-router.delete('/:id', requireAdminHeader, (req, res) => {
-  const row = db.prepare('SELECT * FROM products WHERE id = ?').get(req.params.id)
-  if (!row) return res.status(404).json({ error: 'Produto não encontrado.' })
+router.delete('/:id', requireAdminHeader, async (req, res, next) => {
+  try {
+    const row = await q.get('SELECT * FROM products WHERE id = ?', req.params.id)
+    if (!row) return res.status(404).json({ error: 'Produto não encontrado.' })
 
-  db.prepare('DELETE FROM products WHERE id = ?').run(row.id)
-  if (row.image.startsWith('/uploads/')) removeUpload(row.image.replace('/uploads/', ''))
-  res.json({ products: listAll() })
+    await q.run('DELETE FROM products WHERE id = ?', row.id)
+    if (isUploaded(row.image)) await removeUpload(row.image)
+    res.json({ products: await listAll() })
+  } catch (err) {
+    next(err)
+  }
 })
 
-router.post('/reorder', requireAdminHeader, (req, res) => {
-  const ids = Array.isArray(req.body?.ids) ? req.body.ids : []
-  const stmt = db.prepare('UPDATE products SET position = ? WHERE id = ?')
-  const tx = db.transaction((list) => list.forEach((id, i) => stmt.run(i, id)))
-  tx(ids)
-  res.json({ products: listAll() })
+router.post('/reorder', requireAdminHeader, async (req, res, next) => {
+  try {
+    const ids = Array.isArray(req.body?.ids) ? req.body.ids : []
+    await q.batch(ids.map((id, i) => ({ sql: 'UPDATE products SET position = ? WHERE id = ?', args: [i, id] })))
+    res.json({ products: await listAll() })
+  } catch (err) {
+    next(err)
+  }
 })
 
 export default router

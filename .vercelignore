@@ -1,0 +1,6 @@
+# Nunca enviar para a Vercel
+.env
+.env.*
+data/
+node_modules/
+scripts/

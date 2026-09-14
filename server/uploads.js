@@ -1,14 +1,15 @@
 /* ==========================================================================
    UPLOAD DE IMAGENS
-   Arquivos vão para DATA_DIR/uploads com nome aleatório. O nome enviado pelo
-   navegador nunca é usado no disco (evita travessia de caminho) e o tipo é
-   validado por extensão e mimetype.
+   O arquivo chega em memória (multer.memoryStorage) e é entregue à camada de
+   armazenamento — que grava em disco no local e no Vercel Blob em produção.
+   Manter em memória é o que permite o mesmo código rodar em serverless, onde
+   não há filesystem gravável.
+
+   Validação: tipo permitido por mimetype/extensão e tamanho máximo.
    ========================================================================== */
-import crypto from 'node:crypto'
-import fs from 'node:fs'
-import path from 'node:path'
 import multer from 'multer'
-import { MAX_UPLOAD_BYTES, MAX_UPLOAD_FILES, UPLOADS_DIR } from './config.js'
+import { MAX_UPLOAD_BYTES, MAX_UPLOAD_FILES } from './config.js'
+import { del, put } from './storage/index.js'
 
 const ALLOWED = new Map([
   ['image/jpeg', '.jpg'],
@@ -18,16 +19,8 @@ const ALLOWED = new Map([
   ['image/gif', '.gif'],
 ])
 
-const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => cb(null, UPLOADS_DIR),
-  filename: (_req, file, cb) => {
-    const ext = ALLOWED.get(file.mimetype) || '.bin'
-    cb(null, `${Date.now().toString(36)}-${crypto.randomBytes(8).toString('hex')}${ext}`)
-  },
-})
-
 export const upload = multer({
-  storage,
+  storage: multer.memoryStorage(),
   limits: { fileSize: MAX_UPLOAD_BYTES, files: MAX_UPLOAD_FILES },
   fileFilter: (_req, file, cb) => {
     if (!ALLOWED.has(file.mimetype)) {
@@ -37,13 +30,12 @@ export const upload = multer({
   },
 })
 
-/** Apaga um arquivo enviado, ignorando nomes suspeitos. */
-export function removeUpload(filename) {
-  if (!filename || filename.includes('/') || filename.includes('\\') || filename.includes('..')) return
-  const target = path.join(UPLOADS_DIR, filename)
-  if (!target.startsWith(UPLOADS_DIR)) return
-  fs.promises.unlink(target).catch(() => {})
+/** Grava um arquivo recebido pelo multer e devolve a URL pública. */
+export async function saveUpload(file) {
+  const ext = ALLOWED.get(file.mimetype) || '.bin'
+  const { url } = await put(file.buffer, { ext, contentType: file.mimetype })
+  return url
 }
 
-/** Caminho público servido pelo Express. */
-export const publicUrl = (filename) => `/uploads/${filename}`
+/** Remove uma imagem já gravada, a partir da URL guardada no banco. */
+export const removeUpload = (url) => del(url)

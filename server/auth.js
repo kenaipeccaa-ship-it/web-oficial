@@ -3,12 +3,13 @@
    --------------------------------------------------------------------------
    - Senha guardada como hash bcrypt (nunca em texto puro, nunca no frontend).
    - Sessão em cookie httpOnly + registro no banco, para o logout realmente
-     invalidar o acesso.
+     invalidar o acesso. Por ficar no banco, a sessão funciona igual em
+     serverless: qualquer instância da função reconhece o mesmo cookie.
    - Limite de tentativas de login por IP.
    ========================================================================== */
 import crypto from 'node:crypto'
 import bcrypt from 'bcryptjs'
-import { db, purgeExpiredSessions } from './db.js'
+import { purgeExpiredSessions, q } from './db.js'
 import {
   ADMIN_EMAIL, ADMIN_PASSWORD, ADMIN_PASSWORD_HASH, IS_PROD,
   SESSION_COOKIE, SESSION_TTL_HOURS,
@@ -17,13 +18,13 @@ import {
 const sha256 = (v) => crypto.createHash('sha256').update(v).digest('hex')
 
 /* --------------------- Provisionamento do administrador ------------------ */
-export function ensureAdminUser() {
+export async function ensureAdminUser() {
   if (!ADMIN_EMAIL) {
-    console.warn('[auth] ADMIN_EMAIL não definido — o painel ficará inacessível até configurar o .env')
+    console.warn('[auth] ADMIN_EMAIL não definido — o painel ficará inacessível até configurar o ambiente')
     return
   }
 
-  const existing = db.prepare('SELECT id, password_hash FROM admin_users WHERE email = ?').get(ADMIN_EMAIL)
+  const existing = await q.get('SELECT id, password_hash FROM admin_users WHERE email = ?', ADMIN_EMAIL)
 
   if (ADMIN_PASSWORD && !ADMIN_PASSWORD_HASH) {
     console.warn(
@@ -32,9 +33,9 @@ export function ensureAdminUser() {
     )
   }
 
-  const applyNewPassword = (userId, hash) => {
-    db.prepare("UPDATE admin_users SET password_hash = ?, updated_at = datetime('now') WHERE id = ?").run(hash, userId)
-    db.prepare('DELETE FROM sessions WHERE user_id = ?').run(userId) // derruba sessões antigas
+  const applyNewPassword = async (userId, hash) => {
+    await q.run("UPDATE admin_users SET password_hash = ?, updated_at = datetime('now') WHERE id = ?", hash, userId)
+    await q.run('DELETE FROM sessions WHERE user_id = ?', userId) // derruba sessões antigas
     console.log('[auth] senha do administrador atualizada pelo ambiente')
   }
 
@@ -44,45 +45,46 @@ export function ensureAdminUser() {
    * entrar — dois acessos validos ao painel. Aqui as contas que nao sao a do
    * ambiente sao removidas (as sessoes delas caem junto, por ON DELETE CASCADE).
    */
-  const removeOtherAdmins = () => {
-    const others = db.prepare('SELECT id, email FROM admin_users WHERE email <> ?').all(ADMIN_EMAIL)
+  const removeOtherAdmins = async () => {
+    const others = await q.all('SELECT id, email FROM admin_users WHERE email <> ?', ADMIN_EMAIL)
     if (others.length === 0) return
-    db.prepare('DELETE FROM admin_users WHERE email <> ?').run(ADMIN_EMAIL)
+    await q.run('DELETE FROM admin_users WHERE email <> ?', ADMIN_EMAIL)
     others.forEach((o) => console.log(`[auth] conta administrativa antiga removida: ${o.email}`))
   }
 
   if (existing) {
-    removeOtherAdmins()
+    await removeOtherAdmins()
     // Rotação por hash: troca só quando o hash do ambiente é outro.
     if (ADMIN_PASSWORD_HASH && ADMIN_PASSWORD_HASH !== existing.password_hash) {
-      applyNewPassword(existing.id, ADMIN_PASSWORD_HASH)
+      await applyNewPassword(existing.id, ADMIN_PASSWORD_HASH)
       return
     }
     // Rotação por senha em texto: bcrypt gera um sal novo a cada chamada, então
     // comparar hashes sempre daria "diferente" e derrubaria a sessão a cada
     // reinício. Aqui a comparação é feita contra a senha em si.
     if (!ADMIN_PASSWORD_HASH && ADMIN_PASSWORD && !bcrypt.compareSync(ADMIN_PASSWORD, existing.password_hash)) {
-      applyNewPassword(existing.id, bcrypt.hashSync(ADMIN_PASSWORD, 12))
+      await applyNewPassword(existing.id, bcrypt.hashSync(ADMIN_PASSWORD, 12))
     }
     return
   }
 
   const hash = ADMIN_PASSWORD_HASH || (ADMIN_PASSWORD ? bcrypt.hashSync(ADMIN_PASSWORD, 12) : '')
   if (!hash) {
-    console.warn('[auth] nenhum administrador cadastrado: defina ADMIN_PASSWORD_HASH (ou ADMIN_PASSWORD) no .env')
+    console.warn('[auth] nenhum administrador cadastrado: defina ADMIN_PASSWORD_HASH (ou ADMIN_PASSWORD)')
     return
   }
-  db.prepare('INSERT INTO admin_users (email, password_hash) VALUES (?, ?)').run(ADMIN_EMAIL, hash)
+  await q.run('INSERT INTO admin_users (email, password_hash) VALUES (?, ?)', ADMIN_EMAIL, hash)
   console.log(`[auth] administrador criado: ${ADMIN_EMAIL}`)
-  removeOtherAdmins()
+  await removeOtherAdmins()
 }
 
 /* ------------------------------- Sessões -------------------------------- */
-export function createSession(userId, userAgent = '') {
-  purgeExpiredSessions()
+export async function createSession(userId, userAgent = '') {
+  await purgeExpiredSessions()
   const token = crypto.randomBytes(32).toString('hex')
   const expires = new Date(Date.now() + SESSION_TTL_HOURS * 3600 * 1000)
-  db.prepare('INSERT INTO sessions (token_hash, user_id, expires_at, user_agent) VALUES (?, ?, ?, ?)').run(
+  await q.run(
+    'INSERT INTO sessions (token_hash, user_id, expires_at, user_agent) VALUES (?, ?, ?, ?)',
     sha256(token),
     userId,
     expires.toISOString().replace('T', ' ').slice(0, 19),
@@ -91,24 +93,23 @@ export function createSession(userId, userAgent = '') {
   return { token, expires }
 }
 
-export function destroySession(token) {
+export async function destroySession(token) {
   if (!token) return
-  db.prepare('DELETE FROM sessions WHERE token_hash = ?').run(sha256(token))
+  await q.run('DELETE FROM sessions WHERE token_hash = ?', sha256(token))
 }
 
-export function destroyAllSessions(userId) {
-  db.prepare('DELETE FROM sessions WHERE user_id = ?').run(userId)
+export async function destroyAllSessions(userId) {
+  await q.run('DELETE FROM sessions WHERE user_id = ?', userId)
 }
 
-export function userFromToken(token) {
+export async function userFromToken(token) {
   if (!token) return null
-  const row = db
-    .prepare(
-      `SELECT u.id, u.email FROM sessions s
-       JOIN admin_users u ON u.id = s.user_id
-       WHERE s.token_hash = ? AND s.expires_at > datetime('now')`,
-    )
-    .get(sha256(token))
+  const row = await q.get(
+    `SELECT u.id, u.email FROM sessions s
+     JOIN admin_users u ON u.id = s.user_id
+     WHERE s.token_hash = ? AND s.expires_at > datetime('now')`,
+    sha256(token),
+  )
   return row ?? null
 }
 
@@ -129,11 +130,15 @@ export function clearSessionCookie(res) {
 
 /* ------------------------------ Middleware ------------------------------ */
 /** Exige sessão válida. Sem ela, 401 — nenhum endpoint administrativo é público. */
-export function requireAuth(req, res, next) {
-  const user = userFromToken(req.cookies?.[SESSION_COOKIE])
-  if (!user) return res.status(401).json({ error: 'Não autenticado.' })
-  req.user = user
-  next()
+export async function requireAuth(req, res, next) {
+  try {
+    const user = await userFromToken(req.cookies?.[SESSION_COOKIE])
+    if (!user) return res.status(401).json({ error: 'Não autenticado.' })
+    req.user = user
+    next()
+  } catch (err) {
+    next(err)
+  }
 }
 
 /**

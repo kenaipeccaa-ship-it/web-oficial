@@ -1,14 +1,19 @@
 import { Router } from 'express'
-import { db } from '../db.js'
+import { q } from '../db.js'
 import { requireAdminHeader, requireAuth } from '../auth.js'
-import { publicUrl, removeUpload, upload } from '../uploads.js'
+import { removeUpload, saveUpload, upload } from '../uploads.js'
 
 const router = Router()
 router.use(requireAuth)
 
+/* A coluna "filename" guarda a URL pública da imagem: "/uploads/..." quando o
+   armazenamento é em disco e "https://..." quando é o Vercel Blob. Registros
+   antigos que guardavam só o nome do arquivo continuam funcionando. */
+const toUrl = (v) => (!v ? '' : /^(https?:)?\/\//i.test(v) || v.startsWith('/') ? v : `/uploads/${v}`)
+
 const toApi = (r) => ({
   id: r.id,
-  url: publicUrl(r.filename),
+  url: toUrl(r.filename),
   filename: r.filename,
   originalName: r.original_name,
   title: r.title,
@@ -18,73 +23,97 @@ const toApi = (r) => ({
   createdAt: r.created_at,
 })
 
-const listAll = () =>
-  db.prepare('SELECT * FROM gallery_photos ORDER BY position ASC, id ASC').all().map(toApi)
+const listAll = async () =>
+  (await q.all('SELECT * FROM gallery_photos ORDER BY position ASC, id ASC')).map(toApi)
 
-router.get('/', (_req, res) => res.json({ photos: listAll() }))
+router.get('/', async (_req, res, next) => {
+  try {
+    res.json({ photos: await listAll() })
+  } catch (err) {
+    next(err)
+  }
+})
 
 /* Envio de várias fotos de uma vez. */
-router.post('/', requireAdminHeader, upload.array('photos', 20), (req, res) => {
-  const files = req.files ?? []
-  if (files.length === 0) return res.status(400).json({ error: 'Nenhuma imagem enviada.' })
+router.post('/', requireAdminHeader, upload.array('photos', 20), async (req, res, next) => {
+  try {
+    const files = req.files ?? []
+    if (files.length === 0) return res.status(400).json({ error: 'Nenhuma imagem enviada.' })
 
-  const maxPos = db.prepare('SELECT COALESCE(MAX(position), -1) AS m FROM gallery_photos').get().m
-  const insert = db.prepare(
-    'INSERT INTO gallery_photos (filename, original_name, title, position, active) VALUES (?, ?, ?, ?, 1)',
-  )
-  const tx = db.transaction((list) => {
-    list.forEach((f, i) => insert.run(f.filename, f.originalname, '', maxPos + 1 + i))
-  })
-  tx(files)
+    const { m } = await q.get('SELECT COALESCE(MAX(position), -1) AS m FROM gallery_photos')
+    const base = Number(m)
 
-  res.status(201).json({ photos: listAll(), added: files.length })
+    const urls = await Promise.all(files.map((f) => saveUpload(f)))
+    await q.batch(
+      urls.map((url, i) => ({
+        sql: 'INSERT INTO gallery_photos (filename, original_name, title, position, active) VALUES (?, ?, ?, ?, 1)',
+        args: [url, files[i].originalname, '', base + 1 + i],
+      })),
+    )
+
+    res.status(201).json({ photos: await listAll(), added: files.length })
+  } catch (err) {
+    next(err)
+  }
 })
 
 /* Título, legenda e ativar/desativar. */
-router.patch('/:id', requireAdminHeader, (req, res) => {
-  const row = db.prepare('SELECT * FROM gallery_photos WHERE id = ?').get(req.params.id)
-  if (!row) return res.status(404).json({ error: 'Foto não encontrada.' })
+router.patch('/:id', requireAdminHeader, async (req, res, next) => {
+  try {
+    const row = await q.get('SELECT * FROM gallery_photos WHERE id = ?', req.params.id)
+    if (!row) return res.status(404).json({ error: 'Foto não encontrada.' })
 
-  const title = req.body.title !== undefined ? String(req.body.title).slice(0, 120) : row.title
-  const caption = req.body.caption !== undefined ? String(req.body.caption).slice(0, 300) : row.caption
-  const active = req.body.active !== undefined ? (req.body.active ? 1 : 0) : row.active
+    const title = req.body.title !== undefined ? String(req.body.title).slice(0, 120) : row.title
+    const caption = req.body.caption !== undefined ? String(req.body.caption).slice(0, 300) : row.caption
+    const active = req.body.active !== undefined ? (req.body.active ? 1 : 0) : row.active
 
-  db.prepare('UPDATE gallery_photos SET title = ?, caption = ?, active = ? WHERE id = ?')
-    .run(title, caption, active, row.id)
-  res.json({ photos: listAll() })
+    await q.run('UPDATE gallery_photos SET title = ?, caption = ?, active = ? WHERE id = ?',
+      title, caption, active, row.id)
+    res.json({ photos: await listAll() })
+  } catch (err) {
+    next(err)
+  }
 })
 
 /* Substituir o arquivo de uma foto, mantendo posição e textos. */
-router.put('/:id/file', requireAdminHeader, upload.single('photo'), (req, res) => {
-  const row = db.prepare('SELECT * FROM gallery_photos WHERE id = ?').get(req.params.id)
-  if (!row) {
-    if (req.file) removeUpload(req.file.filename)
-    return res.status(404).json({ error: 'Foto não encontrada.' })
-  }
-  if (!req.file) return res.status(400).json({ error: 'Nenhuma imagem enviada.' })
+router.put('/:id/file', requireAdminHeader, upload.single('photo'), async (req, res, next) => {
+  try {
+    const row = await q.get('SELECT * FROM gallery_photos WHERE id = ?', req.params.id)
+    if (!row) return res.status(404).json({ error: 'Foto não encontrada.' })
+    if (!req.file) return res.status(400).json({ error: 'Nenhuma imagem enviada.' })
 
-  db.prepare('UPDATE gallery_photos SET filename = ?, original_name = ? WHERE id = ?')
-    .run(req.file.filename, req.file.originalname, row.id)
-  removeUpload(row.filename)
-  res.json({ photos: listAll() })
+    const url = await saveUpload(req.file)
+    await q.run('UPDATE gallery_photos SET filename = ?, original_name = ? WHERE id = ?',
+      url, req.file.originalname, row.id)
+    await removeUpload(toUrl(row.filename))
+    res.json({ photos: await listAll() })
+  } catch (err) {
+    next(err)
+  }
 })
 
-router.delete('/:id', requireAdminHeader, (req, res) => {
-  const row = db.prepare('SELECT * FROM gallery_photos WHERE id = ?').get(req.params.id)
-  if (!row) return res.status(404).json({ error: 'Foto não encontrada.' })
+router.delete('/:id', requireAdminHeader, async (req, res, next) => {
+  try {
+    const row = await q.get('SELECT * FROM gallery_photos WHERE id = ?', req.params.id)
+    if (!row) return res.status(404).json({ error: 'Foto não encontrada.' })
 
-  db.prepare('DELETE FROM gallery_photos WHERE id = ?').run(row.id)
-  removeUpload(row.filename)
-  res.json({ photos: listAll() })
+    await q.run('DELETE FROM gallery_photos WHERE id = ?', row.id)
+    await removeUpload(toUrl(row.filename))
+    res.json({ photos: await listAll() })
+  } catch (err) {
+    next(err)
+  }
 })
 
 /* Reordenar: recebe a lista de ids na ordem desejada. */
-router.post('/reorder', requireAdminHeader, (req, res) => {
-  const ids = Array.isArray(req.body?.ids) ? req.body.ids : []
-  const stmt = db.prepare('UPDATE gallery_photos SET position = ? WHERE id = ?')
-  const tx = db.transaction((list) => list.forEach((id, i) => stmt.run(i, id)))
-  tx(ids)
-  res.json({ photos: listAll() })
+router.post('/reorder', requireAdminHeader, async (req, res, next) => {
+  try {
+    const ids = Array.isArray(req.body?.ids) ? req.body.ids : []
+    await q.batch(ids.map((id, i) => ({ sql: 'UPDATE gallery_photos SET position = ? WHERE id = ?', args: [i, id] })))
+    res.json({ photos: await listAll() })
+  } catch (err) {
+    next(err)
+  }
 })
 
 export default router

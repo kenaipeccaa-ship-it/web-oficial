@@ -238,8 +238,9 @@ data/              ← criado no primeiro boot, fora do código (não versionado
 └─ uploads/        ← imagens enviadas pelo painel, servidas em /uploads/...
 ```
 
-O caminho é controlado por `DATA_DIR`. **Em produção aponte para um disco
-persistente** — se a pasta for efêmera, as fotos somem a cada deploy.
+O caminho é controlado por `DATA_DIR` e vale **só em desenvolvimento**. Em
+produção na Vercel os dados ficam no Turso e as imagens no Vercel Blob — ver
+[Deploy na Vercel](#deploy-na-vercel).
 
 A pasta `public/images/store/` continua funcionando para quem preferir versionar
 imagens junto do código, mas pelo painel é mais simples.
@@ -279,43 +280,71 @@ Copie `.env.example` para `.env`:
 Para trocar a senha depois, use **Conta → Alterar senha** no painel, ou gere um
 novo `ADMIN_PASSWORD_HASH` e reinicie o servidor (as sessões abertas caem).
 
-### Deploy
+### Deploy na Vercel
 
-O projeto virou uma aplicação Node: um único processo serve o site, a API e as
-imagens. Serve qualquer host com Node 20+ e disco persistente (VPS, Render,
-Railway, Fly.io, Docker).
+O projeto roda em dois ambientes com **um código só** — o que muda são as
+variáveis de ambiente:
+
+| | Desenvolvimento | Produção (Vercel) |
+|---|---|---|
+| Site | Vite / Node | CDN da Vercel (`dist/`) |
+| API | Express local | Função serverless (`api/index.js`) |
+| Banco | SQLite em arquivo (`file:`) | Turso / libSQL |
+| Imagens | Disco (`DATA_DIR/uploads`) | Vercel Blob |
+
+O driver do banco é o **mesmo** nos dois (libSQL, dialeto SQLite), então o
+caminho de código exercitado localmente é o de produção.
+
+**1. Banco (Turso)**
 
 ```bash
-npm ci
-npm run build          # gera dist/
-npm start              # NODE_ENV=production node server/index.js
+# https://turso.tech — crie a conta e o banco
+turso db create skyfit
+turso db show --url skyfit        # -> TURSO_DATABASE_URL
+turso db tokens create skyfit     # -> TURSO_AUTH_TOKEN
 ```
 
-Checklist de produção:
+O schema e a semente são criados sozinhos na primeira requisição.
 
-1. `.env` preenchido com `ADMIN_EMAIL`, `ADMIN_PASSWORD_HASH` e `SESSION_SECRET`.
-2. `DATA_DIR` apontando para um **volume persistente** (ex.: `/var/data`).
-3. Servir atrás de HTTPS — o cookie de sessão usa `Secure` em produção e não
-   trafega em HTTP puro. Com proxy reverso (Nginx, Caddy, Traefik), encaminhe
-   `X-Forwarded-Proto`; o servidor já está com `trust proxy` ligado.
-4. Manter o processo vivo com `systemd`, `pm2` ou o supervisor do seu host.
-5. Backup: basta copiar a pasta do `DATA_DIR` (banco + imagens).
+**2. Imagens (Vercel Blob)**
 
-Exemplo de bloco Nginx:
+No painel da Vercel: **Storage → Create → Blob** e conecte ao projeto. A
+variável `BLOB_READ_WRITE_TOKEN` é injetada automaticamente.
 
-```nginx
-location / {
-  proxy_pass http://127.0.0.1:3001;
-  proxy_set_header Host $host;
-  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-  proxy_set_header X-Forwarded-Proto $scheme;
-  client_max_body_size 10M;   # precisa ser maior que MAX_UPLOAD_BYTES
-}
+**3. Variáveis no painel da Vercel** (Settings → Environment Variables)
+
+| Variável | Valor |
+|---|---|
+| `ADMIN_EMAIL` | seu e-mail de login |
+| `ADMIN_PASSWORD_HASH` | `npm run admin:hash -- "sua-senha"` |
+| `SESSION_SECRET` | `openssl rand -hex 32` |
+| `TURSO_DATABASE_URL` | do passo 1 |
+| `TURSO_AUTH_TOKEN` | do passo 1 |
+| `BLOB_READ_WRITE_TOKEN` | injetada no passo 2 |
+
+> Se faltar `TURSO_*` ou `BLOB_*`, a API responde **503 com a lista do que
+> falta** em vez de gravar num filesystem efêmero e perder tudo em silêncio.
+
+**4. Deploy**
+
+Importe o repositório na Vercel. O `vercel.json` já define o build, a saída
+(`dist`), a função e os rewrites (`/api/*` → função; `/admin` → SPA).
+Nenhuma configuração manual de framework é necessária.
+
+**5. Depois do deploy**
+
+Acesse `https://seu-dominio/admin` e faça login. O banco começa com os mesmos
+12 produtos e as mesmas informações que já estavam nos arquivos do projeto.
+
+**Migrar dados de um banco local para o Turso** (opcional, se você já cadastrou
+conteúdo em desenvolvimento):
+
+```bash
+turso db shell skyfit < <(sqlite3 data/app.db .dump)
 ```
 
-Hospedagem **estática** (Netlify, GitHub Pages, S3) continua funcionando para o
-site público — ele cai no conteúdo dos arquivos estáticos — mas **sem painel**,
-porque não há servidor para a API.
+As imagens precisam ser reenviadas pelo painel, porque os caminhos locais
+(`/uploads/...`) não existem no Blob.
 
 ## Estrutura
 
@@ -342,10 +371,17 @@ src/
 │                          content (conteúdo vindo do painel, com fallback)
 └─ styles/               ← fonts, tokens, base, ui
 
-server/                  ← API e painel (Express + SQLite)
-├─ index.js · config.js · db.js · auth.js · uploads.js
+server/                  ← API (Express + libSQL)
+├─ app.js                ← a aplicação, sem escutar porta
+├─ index.js              ← servidor local (escuta a porta)
+├─ config.js             ← separação entre desenvolvimento e produção
+├─ db.js · auth.js · uploads.js
+├─ storage/              ← local.js (disco) e blob.js (Vercel Blob)
 ├─ routes/               ← auth, gallery, products, settings, public
 └─ cli/hash-password.js  ← gera o hash da senha do administrador
+
+api/index.js             ← entrada da função serverless na Vercel
+vercel.json              ← build, função e rewrites
 ```
 
 **Stack:** React 18 + Vite + CSS moderno (custom properties, sem framework de UI) +
