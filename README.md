@@ -1,6 +1,6 @@
-# SKYFIT — Satélite Íris · Demonstração de conceito
+# SKYFIT — Campo Grande · Demonstração de conceito
 
-Demonstração **independente** de um site para uma academia na região do Satélite Íris,
+Demonstração **independente** de um site para uma academia na região do Campo Grande,
 Campinas/SP. O objetivo é apresentar uma proposta de experiência digital ao responsável
 pela unidade.
 
@@ -53,7 +53,7 @@ export const EMAIL = ''         // opcional
 
 ```js
 export const brand = {
-  addressLine: 'Rua ..., nº ... — Satélite Íris, Campinas/SP',
+  addressLine: 'Rua ..., nº ... — Campo Grande, Campinas/SP',
   mapEmbedUrl: 'https://www.google.com/maps/embed?pb=...', // ativa o mapa na seção
   mapsDirectionsUrl: 'https://maps.app.goo.gl/...',        // ativa o botão "Como chegar"
 }

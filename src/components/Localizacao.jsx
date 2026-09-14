@@ -18,7 +18,7 @@ export default function Localizacao() {
           eyebrow="Localização"
           id="localizacao-title"
           title="Onde estamos"
-          lead="A unidade fica na região do Satélite Íris, em Campinas/SP. O endereço completo é preenchido na versão oficial da página."
+          lead="A unidade fica na região do Campo Grande, em Campinas/SP. O endereço completo é preenchido na versão oficial da página."
         />
 
         <div className="loc">

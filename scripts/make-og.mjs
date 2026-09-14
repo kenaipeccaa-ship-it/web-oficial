@@ -60,7 +60,7 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><style>
         <circle cx="24.5" cy="24.5" r="2.5" fill="#fff"/>
       </svg>
     </div>
-    <div><div class="name">SKYFIT</div><div class="unit">SATÉLITE ÍRIS</div></div>
+    <div><div class="name">SKYFIT</div><div class="unit">CAMPO GRANDE</div></div>
   </div>
 
   <h1>Seu próximo nível<br><em>começa aqui.</em></h1>

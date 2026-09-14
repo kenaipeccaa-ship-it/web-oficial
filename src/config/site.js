@@ -31,8 +31,8 @@ export const EMAIL = '' // [DEFINIR] e-mail de contato, se houver
    -------------------------------------------------------------------------- */
 export const brand = {
   name: 'SKYFIT',
-  unit: 'SATÉLITE ÍRIS',
-  region: 'Satélite Íris',
+  unit: 'CAMPO GRANDE',
+  region: 'Campo Grande',
   city: 'Campinas/SP',
   // Endereco completo NAO confirmado — nao inventar.
   addressLine: '[INSERIR ENDEREÇO OFICIAL DA UNIDADE]',
