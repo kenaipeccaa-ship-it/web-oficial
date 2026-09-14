@@ -81,4 +81,13 @@ export const api = {
     return request('/admin/settings/hero-image', { method: 'PUT', body: fd, isForm: true })
   },
   heroImageRemove: () => request('/admin/settings/hero-image', { method: 'DELETE' }),
+
+  /* ---- imagens das modalidades ---- */
+  modalidadeImageUpload: (id, file) => {
+    const fd = new FormData()
+    fd.append('image', file)
+    return request(`/admin/settings/modalidade-image/${encodeURIComponent(id)}`, { method: 'PUT', body: fd, isForm: true })
+  },
+  modalidadeImageRemove: (id) =>
+    request(`/admin/settings/modalidade-image/${encodeURIComponent(id)}`, { method: 'DELETE' }),
 }

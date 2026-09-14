@@ -37,7 +37,7 @@ router.get('/content', (_req, res) => {
 
   // Sem cache: o que o painel altera precisa aparecer no site na hora.
   res.set('Cache-Control', 'no-store')
-  res.json({ gallery: photos, products, info })
+  res.json({ gallery: photos, products, info, modalidadeImages: getSetting('modalidade_images', {}) ?? {} })
 })
 
 export default router

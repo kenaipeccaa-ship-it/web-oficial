@@ -4,11 +4,13 @@ import GalleryPanel from './panels/GalleryPanel.jsx'
 import ProductsPanel from './panels/ProductsPanel.jsx'
 import InfoPanel from './panels/InfoPanel.jsx'
 import AppearancePanel from './panels/AppearancePanel.jsx'
+import ModalidadesPanel from './panels/ModalidadesPanel.jsx'
 import AccountPanel from './panels/AccountPanel.jsx'
 
 const SECTIONS = [
   { id: 'aparencia', label: 'Página inicial', icon: 'M3 4h18v16H3z M3 9h18 M8 14l3 3 5-6' },
   { id: 'galeria', label: 'Galeria', icon: 'M3 5h18v14H3z M3 15l5-5 4 4 3-3 6 6' },
+  { id: 'modalidades', label: 'Modalidades', icon: 'M6 8v8 M18 8v8 M3 10v4 M21 10v4 M6 12h12' },
   { id: 'produtos', label: 'Produtos', icon: 'M4 7l8-4 8 4v10l-8 4-8-4z M4 7l8 4 8-4 M12 11v10' },
   { id: 'informacoes', label: 'Informações', icon: 'M12 3a9 9 0 100 18 9 9 0 000-18z M12 8h.01 M11 12h1v5h1' },
   { id: 'conta', label: 'Conta', icon: 'M12 12a4 4 0 100-8 4 4 0 000 8z M4 21v-1a6 6 0 016-6h4a6 6 0 016 6v1' },
@@ -116,6 +118,7 @@ export default function Dashboard({ user, onLogout }) {
         <main className="adm-main">
           {section === 'aparencia' && <AppearancePanel notify={notify} />}
           {section === 'galeria' && <GalleryPanel notify={notify} />}
+          {section === 'modalidades' && <ModalidadesPanel notify={notify} />}
           {section === 'produtos' && <ProductsPanel notify={notify} />}
           {section === 'informacoes' && <InfoPanel notify={notify} />}
           {section === 'conta' && <AccountPanel user={user} notify={notify} onLogout={onLogout} />}

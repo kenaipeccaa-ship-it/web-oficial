@@ -194,6 +194,20 @@ Painel → **Galeria**. Controla a seção *“Um espaço para você evoluir”*
 Tudo aparece no site imediatamente. Enquanto não houver **nenhuma** foto, a
 seção continua exibindo as artes ilustrativas de sempre.
 
+### Modalidades (fotos dos cards)
+
+Painel → **Modalidades**. Controla apenas a **foto** de cada card da seção
+*“Escolha como você quer treinar”*.
+
+- **Enviar / Trocar foto:** por modalidade (JPG, PNG, WebP, AVIF ou GIF, até
+  8 MB). O arquivo anterior é apagado do disco.
+- **Remover foto:** aquele card volta à arte gráfica padrão, sem afetar os
+  outros.
+
+A foto aparece no card e também no modal “Saiba mais”. Nome, etiqueta, ícone e
+descrição das modalidades continuam definidos em `src/config/site.js` — o painel
+não mexe nesses campos.
+
 ### Produtos
 
 Painel → **Produtos**. Controla a Exclusive Store.
@@ -220,7 +234,7 @@ a valer em **todos** os botões do site.
 ```
 data/              ← criado no primeiro boot, fora do código (não versionado)
 ├─ app.db          ← banco SQLite: produtos, fotos, informações, imagem do
-│                    topo, usuário e sessões
+│                    topo, fotos das modalidades, usuário e sessões
 └─ uploads/        ← imagens enviadas pelo painel, servidas em /uploads/...
 ```
 
@@ -321,8 +335,8 @@ src/
 │  └─ ui/                ← Art, PhotoFrame, Modal, Reveal, Icon, SectionHeading, WhatsAppLink
 ├─ admin/                ← painel /admin (bundle separado do site público)
 │  ├─ AdminApp · Login · Dashboard · api.js · admin.css
-│  └─ panels/            ← AppearancePanel, GalleryPanel, ProductsPanel,
-│                          InfoPanel, AccountPanel
+│  └─ panels/            ← AppearancePanel, GalleryPanel, ModalidadesPanel,
+│                          ProductsPanel, InfoPanel, AccountPanel
 ├─ hooks/                ← useReveal, useLockBodyScroll, useScrollSpy
 ├─ lib/                  ← whatsapp (link), notice (avisos), cart (carrinho),
 │                          content (conteúdo vindo do painel, com fallback)

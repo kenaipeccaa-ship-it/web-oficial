@@ -6,10 +6,14 @@ import Reveal from './ui/Reveal.jsx'
 import SectionHeading from './ui/SectionHeading.jsx'
 import WhatsAppLink from './ui/WhatsAppLink.jsx'
 import { modalidades, whatsappMessages } from '../config/site.js'
+import { useModalidadeImages } from '../lib/content.jsx'
 import './Modalidades.css'
 
 export default function Modalidades() {
   const [openId, setOpenId] = useState(null)
+  /* Imagens enviadas pelo painel (/admin → Modalidades). Nomes, textos e
+     ícones seguem vindo de src/config/site.js. */
+  const images = useModalidadeImages()
   const current = modalidades.find((m) => m.id === openId) || null
   const close = useCallback(() => setOpenId(null), [])
 
@@ -27,7 +31,7 @@ export default function Modalidades() {
           {modalidades.map((m, i) => (
             <Reveal as="li" key={m.id} className="mod card" delay={(i % 4) * 80}>
               <div className="mod__media">
-                <PhotoFrame artKey={m.art} badge={false} className="mod__photo" />
+                <PhotoFrame artKey={m.art} src={images[m.id]} alt={m.name} badge={false} className="mod__photo" />
                 <span className="mod__tag">{m.tag}</span>
                 <span className="mod__icon">
                   <Icon name={m.icon} size={20} />
@@ -61,7 +65,7 @@ export default function Modalidades() {
         {current && (
           <>
             <div className="mod-modal__media">
-              <PhotoFrame artKey={current.art} badge={false} className="mod-modal__photo" />
+              <PhotoFrame artKey={current.art} src={images[current.id]} alt={current.name} badge={false} className="mod-modal__photo" />
               <div className="mod-modal__head">
                 <span className="mod-modal__tag">
                   <Icon name={current.icon} size={15} />

@@ -16,10 +16,10 @@ import { products as staticProducts } from '../data/products.js'
    exatamente como era antes do painel existir.
    ========================================================================== */
 
-const ContentContext = createContext({ gallery: [], products: null, info: null, loaded: false })
+const ContentContext = createContext({ gallery: [], products: null, info: null, modalidadeImages: {}, loaded: false })
 
 export function ContentProvider({ children }) {
-  const [state, setState] = useState({ gallery: [], products: null, info: null, loaded: false })
+  const [state, setState] = useState({ gallery: [], products: null, info: null, modalidadeImages: {}, loaded: false })
 
   useEffect(() => {
     let alive = true
@@ -33,6 +33,7 @@ export function ContentProvider({ children }) {
           gallery: Array.isArray(data.gallery) ? data.gallery : [],
           products: Array.isArray(data.products) && data.products.length ? data.products : null,
           info: data.info ?? null,
+          modalidadeImages: data.modalidadeImages ?? {},
           loaded: true,
         })
       })
@@ -56,6 +57,12 @@ export const useGallery = () => useContent().gallery
 
 /** Produtos da loja: os do painel ou, na falta deles, os de src/data/products.js. */
 export const useStoreProducts = () => useContent().products ?? staticProducts
+
+/**
+ * Imagens das modalidades enviadas pelo painel, no formato { id: '/uploads/...' }.
+ * Modalidade sem imagem => o card usa a arte padrão de src/config/media.js.
+ */
+export const useModalidadeImages = () => useContent().modalidadeImages
 
 /** Informações da academia, com os valores estáticos como padrão. */
 export function useSiteInfo() {
