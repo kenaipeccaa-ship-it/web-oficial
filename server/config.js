@@ -62,6 +62,41 @@ const envOf = (name) => {
 }
 
 /**
+ * Procura uma variável pelo nome canônico OU por qualquer nome terminado nele.
+ *
+ * A Vercel nem sempre injeta o nome canônico: quando o store não é o primeiro
+ * do projeto, ou foi conectado com prefixo, ela gera algo como
+ * SKYFIT_MEDIA_BLOB_STORE_ID. Procurar só o nome exato faz a credencial
+ * parecer ausente quando na verdade está lá, com outro nome.
+ */
+export function findEnv(suffix) {
+  const exato = envOf(suffix)
+  if (exato) return { name: suffix, value: exato }
+  for (const name of Object.keys(process.env)) {
+    if (!name.endsWith(`_${suffix}`)) continue
+    const value = envOf(name)
+    if (value) return { name, value }
+  }
+  return null
+}
+
+/** `https://<storeId>.public.blob.vercel-storage.com/...` -> storeId */
+export function storeIdDaUrl(url) {
+  try {
+    const host = new URL(String(url)).hostname
+    if (!host.endsWith('.blob.vercel-storage.com')) return ''
+    const sub = host.split('.')[0]
+    return sub && sub !== 'blob' ? sub : ''
+  } catch {
+    return ''
+  }
+}
+
+/** O SDK trabalha com o id sem o prefixo `store_`. */
+export const normalizeStoreId = (id) =>
+  String(id).startsWith('store_') ? String(id).slice('store_'.length) : String(id)
+
+/**
  * Credencial disponível agora, ou null. Nunca devolve o valor no log.
  *
  * O token OIDC é procurado primeiro no contexto da requisição (header
@@ -69,17 +104,21 @@ const envOf = (name) => {
  * depois no ambiente. Por isso esta função não pode virar `const`.
  */
 export function blobCredentials() {
-  const token = envOf('BLOB_READ_WRITE_TOKEN')
-  if (token) return { mode: 'token', token }
+  const tokenVar = findEnv('BLOB_READ_WRITE_TOKEN')
+  if (tokenVar) return { mode: 'token', token: tokenVar.value }
 
-  /* O token OIDC pode chegar pelo header da requisição ou pelo ambiente.
-     O storeId é opcional aqui: sem ele o SDK ainda tenta ler BLOB_STORE_ID
-     por conta própria, e o erro que ele dá nesse caso é específico ("no
-     storeId was found"), o que é mais útil do que devolver null e cair no
-     genérico "No blob credentials found". */
   const oidcToken = requestContext().oidcToken || envOf('VERCEL_OIDC_TOKEN')
-  if (oidcToken) return { mode: 'oidc', oidcToken, storeId: envOf('BLOB_STORE_ID') }
-  return null
+  if (!oidcToken) return null
+
+  /* Com OIDC o storeId é obrigatório — vira o header x-vercel-blob-store-id
+     e o subdomínio da URL pública. Aqui cobrimos as fontes baratas; a outra
+     (uma URL já gravada no banco) depende de I/O e fica em storage/blob.js. */
+  const idVar = findEnv('BLOB_STORE_ID')
+  return {
+    mode: 'oidc',
+    oidcToken,
+    storeId: idVar ? normalizeStoreId(idVar.value) : '',
+  }
 }
 
 /**
@@ -105,6 +144,9 @@ export function blobDiagnostics() {
     headerOidcNestaRequisicao: Boolean(requestContext().oidcToken),
     contextoGlobalDoSdk: pontePropria(),
     variaveis: Object.fromEntries(nomes.map((n) => [n, envOf(n) ? 'presente' : 'ausente'])),
+    /* Nomes (nunca valores) de toda variável de Blob/OIDC que a função
+       enxerga. É aqui que apareceria um nome com prefixo, se existisse. */
+    nomesRelacionados: Object.keys(process.env).filter((n) => /BLOB|OIDC/i.test(n)).sort(),
   }
 }
 
