@@ -13,7 +13,8 @@ import cookieParser from 'cookie-parser'
 import fs from 'node:fs'
 import path from 'node:path'
 import {
-  DIST_DIR, IS_PROD, IS_VERCEL, MAX_UPLOAD_BYTES, SERVE_STATIC, STORAGE_DRIVER, UPLOADS_DIR,
+  DIST_DIR, IS_PROD, IS_VERCEL, MAX_UPLOAD_BYTES, SERVE_STATIC, storageDriver, UPLOADS_DIR,
+  blobWarning,
   serverlessMisconfig,
 } from './config.js'
 import { ensureAdminUser } from './auth.js'
@@ -46,19 +47,22 @@ export function createApp() {
     next()
   })
 
-  /* Deploy mal configurado falha alto, em vez de perder dados em silêncio. */
-  const faltando = serverlessMisconfig()
-  if (faltando.length > 0) {
-    console.error(`[boot] variáveis de ambiente faltando na Vercel: ${faltando.join(', ')}`)
-    app.use((_req, res) =>
-      res.status(503).json({
-        error:
-          'Servidor não configurado para produção. Defina no painel da Vercel: ' +
-          `${faltando.join(', ')}. Sem isso, os dados e as imagens seriam perdidos a cada requisição.`,
-      }),
-    )
-    return app
-  }
+  /* Deploy mal configurado falha alto, em vez de perder dados em silêncio.
+     A checagem é POR REQUISIÇÃO, não no boot: numa função serverless nem toda
+     variável está visível no instante em que o módulo carrega. */
+  const aviso = blobWarning()
+  if (aviso) console.warn(`[boot] aviso de imagens: ${aviso}`)
+
+  app.use((_req, res, next) => {
+    const faltando = serverlessMisconfig()
+    if (faltando.length === 0) return next()
+    console.error(`[req] variáveis de ambiente faltando na Vercel: ${faltando.join(', ')}`)
+    res.status(503).json({
+      error:
+        'Servidor não configurado para produção. Defina no painel da Vercel: ' +
+        `${faltando.join(', ')}. Sem isso, os dados seriam perdidos a cada requisição.`,
+    })
+  })
 
   app.use(express.json({ limit: '1mb' }))
   app.use(express.urlencoded({ extended: false, limit: '1mb' }))
@@ -77,7 +81,7 @@ export function createApp() {
   /* ------------------------------- Imagens ------------------------------- */
   /* Só no armazenamento em disco. Com o Vercel Blob as URLs são absolutas e
      servidas pela CDN do Blob, sem passar por aqui. */
-  if (STORAGE_DRIVER === 'local') {
+  if (storageDriver() === 'local') {
     app.use(
       '/uploads',
       express.static(UPLOADS_DIR, {
@@ -96,7 +100,7 @@ export function createApp() {
   app.use('/api/admin/products', productRoutes)
   app.use('/api/admin/settings', settingsRoutes)
 
-  app.get('/api/health', (_req, res) => res.json({ ok: true, serverless: IS_VERCEL, storage: STORAGE_DRIVER }))
+  app.get('/api/health', (_req, res) => res.json({ ok: true, serverless: IS_VERCEL, storage: storageDriver() }))
 
   /* Erros de upload e afins viram JSON (nunca HTML de stack trace). */
   app.use('/api', (err, _req, res, _next) => {
