@@ -18,6 +18,7 @@ import {
   serverlessMisconfig,
 } from './config.js'
 import { ensureAdminUser } from './auth.js'
+import { requestContextMiddleware } from './request-context.js'
 import { ready } from './db.js'
 import authRoutes from './routes/auth.routes.js'
 import galleryRoutes from './routes/gallery.routes.js'
@@ -46,6 +47,10 @@ export function createApp() {
     if (IS_PROD) res.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains')
     next()
   })
+
+  /* O token OIDC da Vercel chega no header de cada requisição; guardá-lo aqui
+     é o que permite o upload no Blob autenticar. Precisa vir antes das rotas. */
+  app.use(requestContextMiddleware)
 
   /* Deploy mal configurado falha alto, em vez de perder dados em silêncio.
      A checagem é POR REQUISIÇÃO, não no boot: numa função serverless nem toda

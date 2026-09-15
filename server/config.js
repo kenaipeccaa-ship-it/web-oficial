@@ -9,6 +9,7 @@
    ========================================================================== */
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { requestContext } from './request-context.js'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 export const ROOT = path.resolve(here, '..')
@@ -60,13 +61,20 @@ const envOf = (name) => {
   return typeof v === 'string' && v.trim() !== '' ? v.trim() : ''
 }
 
-/** Credencial disponível agora, ou null. Nunca devolve o valor no log. */
+/**
+ * Credencial disponível agora, ou null. Nunca devolve o valor no log.
+ *
+ * O token OIDC é procurado primeiro no contexto da requisição (header
+ * x-vercel-oidc-token, que é por onde ele realmente chega na Vercel) e só
+ * depois no ambiente. Por isso esta função não pode virar `const`.
+ */
 export function blobCredentials() {
   const token = envOf('BLOB_READ_WRITE_TOKEN')
   if (token) return { mode: 'token', token }
+
+  const oidcToken = requestContext().oidcToken || envOf('VERCEL_OIDC_TOKEN')
   const storeId = envOf('BLOB_STORE_ID')
-  const oidc = envOf('VERCEL_OIDC_TOKEN')
-  if (storeId && oidc) return { mode: 'oidc', token: '' }
+  if (oidcToken && storeId) return { mode: 'oidc', oidcToken, storeId }
   return null
 }
 
@@ -127,9 +135,10 @@ export function serverlessMisconfig() {
 export function blobWarning() {
   if (!IS_VERCEL || blobCredentials()) return ''
   return (
-    'nenhuma credencial de Blob visível em process.env ' +
-    '(BLOB_READ_WRITE_TOKEN, ou BLOB_STORE_ID + VERCEL_OIDC_TOKEN). ' +
-    'Uploads podem falhar; leitura do site não é afetada. ' +
+    'nenhuma credencial de Blob visível fora de uma requisição ' +
+    '(BLOB_READ_WRITE_TOKEN, ou BLOB_STORE_ID + token OIDC). ' +
+    'Isso é normal no boot: o token OIDC chega no header de cada requisição. ' +
+    'Uploads só falham se continuar ausente durante a requisição. ' +
     `Variáveis de Blob visíveis: ${blobEnvNames().join(', ') || 'nenhuma'}`
   )
 }
