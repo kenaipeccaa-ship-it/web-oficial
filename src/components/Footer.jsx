@@ -1,7 +1,7 @@
 import { Icon, WhatsAppGlyph } from './ui/Icon.jsx'
 import WhatsAppLink from './ui/WhatsAppLink.jsx'
 import { useNotice } from '../lib/notice.jsx'
-import { demoNotice, whatsappMessages } from '../config/site.js'
+import { whatsappMessages } from '../config/site.js'
 import { useSiteInfo } from '../lib/content.jsx'
 import './Footer.css'
 
@@ -40,7 +40,6 @@ export default function Footer() {
             <Icon name="MapPin" size={15} />
             {brand.city}
           </p>
-          <p className="footer__about">{demoNotice.long}</p>
         </div>
 
         <nav className="footer__nav" aria-label="Links do rodapé">
@@ -79,7 +78,7 @@ export default function Footer() {
                 <button
                   type="button"
                   className="footer__contact-link"
-                  onClick={() => notify('Demonstração: o perfil do Instagram é um campo editável e ainda não foi preenchido.')}
+                  onClick={() => notify('O perfil do Instagram ainda não foi divulgado. Fale com a unidade pelo WhatsApp.')}
                 >
                   <span className="footer__contact-icon"><Icon name="Instagram" size={16} /></span>
                   <span>
@@ -103,9 +102,8 @@ export default function Footer() {
       </div>
 
       <div className="container footer__bottom">
-        <p>{demoNotice.short}</p>
         <p className="footer__legal">
-          © {year} — Página de demonstração criada para apresentação de proposta. Não é um canal oficial da academia.
+          © {year} {brand.name} — {brand.city}. Todos os direitos reservados.
         </p>
       </div>
     </footer>

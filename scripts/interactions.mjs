@@ -86,13 +86,16 @@ const check = (ok, label) => { console.log(`${ok ? 'PASS' : 'FAIL'} — ${label}
   await page.click('.form__submit')
   await page.waitForTimeout(500)
   const done = await page.textContent('.form-done')
-  check(done.includes('Sua solicitação foi registrada nesta demonstração'), 'formulário mostra a confirmação da demonstração')
+  check(done.includes('Falta só um passo'), 'formulário mostra a confirmação e encaminha ao WhatsApp')
   await page.screenshot({ path: `${OUT}/form-done.png` })
 
   // Aviso quando o WhatsApp ainda não foi configurado
   await page.click('.header__cta')
   await page.waitForTimeout(400)
-  check((await page.textContent('.toast')).includes('WHATSAPP_NUMBER'), 'botão de WhatsApp avisa que o número não foi configurado')
+  check(
+    (await page.textContent('.toast')).includes('ainda não foi divulgado'),
+    'botão de WhatsApp avisa que o número ainda não foi divulgado',
+  )
 
   // Links internos: todas as âncoras existem
   const badAnchors = await page.evaluate(() =>

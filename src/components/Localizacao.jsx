@@ -84,7 +84,7 @@ export default function Localizacao() {
                 <button
                   type="button"
                   className="btn btn--primary btn--block"
-                  onClick={() => notify('Demonstração: o endereço oficial ainda não foi informado. O botão "Como chegar" é ativado ao preencher o link do Google Maps na configuração.')}
+                  onClick={() => notify('O endereço completo ainda não foi divulgado. Fale com a unidade pelo WhatsApp para saber como chegar.')}
                 >
                   <Icon name="Navigation" size={17} />
                   Como chegar

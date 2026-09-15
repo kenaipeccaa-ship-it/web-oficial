@@ -1,10 +1,10 @@
 /* ==========================================================================
    CONFIGURACAO CENTRAL DO SITE
    --------------------------------------------------------------------------
-   Este arquivo concentra TODO o conteudo editavel da demonstracao.
-   Para colocar o projeto no ar com dados reais, altere apenas este arquivo.
+   Este arquivo concentra TODO o conteudo editavel do site.
+   Para atualizar os dados publicados, altere apenas este arquivo.
 
-   ATENCAO — DEMONSTRACAO DE CONCEITO:
+   ATENCAO:
    Nenhum telefone, preco, endereco, horario, depoimento ou numero de alunos
    foi inventado. Todos os campos nao confirmados estao marcados com o
    prefixo "[DEFINIR]" ou com o texto "Consulte a unidade".
@@ -43,7 +43,7 @@ export const brand = {
 /* Horarios de funcionamento NAO confirmados — nao inventar. */
 export const openingHours = {
   confirmed: false,
-  note: 'Horários não confirmados para esta demonstração.',
+  note: 'Horários não confirmados. Consulte a unidade.',
   rows: [
     { label: 'Segunda a sexta', value: 'Consulte a unidade' },
     { label: 'Sábado', value: 'Consulte a unidade' },
@@ -130,7 +130,7 @@ export const features = [
 /* --------------------------------------------------------------------------
    7) MODALIDADES
    --------------------------------------------------------------------------
-   IMPORTANTE: nomes, disponibilidade e horarios usados nesta demonstracao
+   IMPORTANTE: nomes, disponibilidade e horarios listados aqui
    precisam ser CONFIRMADOS COM A UNIDADE antes de qualquer publicacao.
    Para editar: adicione, remova ou reordene os objetos desta lista.
      id        -> ancora unica (sem acentos/espacos)
@@ -415,22 +415,22 @@ export const faq = [
   {
     id: 'faq-modalidades',
     q: 'Quais modalidades estão disponíveis?',
-    a: 'Esta demonstração apresenta musculação e aulas coletivas como Fit Dance, Cardio Training, Power Bike, Body Jam, Aeróbicos, Aerower e Condicionamento Corporal. A lista de modalidades ativas e a disponibilidade de cada turma devem ser confirmadas com a unidade.',
+    a: 'A unidade trabalha com musculação e aulas coletivas como Fit Dance, Cardio Training, Power Bike, Body Jam, Aeróbicos, Aerower e Condicionamento Corporal. A lista de modalidades ativas e a disponibilidade de cada turma devem ser confirmadas com a unidade.',
   },
   {
     id: 'faq-planos',
     q: 'Quais são os planos?',
-    a: 'A demonstração apresenta três formatos de plano — Essencial, Plus e Premium. Valores, condições e o que cada plano inclui não estão definidos aqui: consulte a unidade para informações atualizadas.',
+    a: 'São três formatos de plano — Essencial, Plus e Premium. Valores, condições e o que cada plano inclui devem ser consultados diretamente com a unidade.',
   },
   {
     id: 'faq-experimental',
     q: 'Como funciona a aula experimental?',
-    a: 'Nesta demonstração, o formulário registra o interesse e o botão de WhatsApp abre uma conversa com uma mensagem pronta. As regras da aula experimental — disponibilidade, duração e o que levar — devem ser confirmadas com a unidade.',
+    a: 'Preencha o formulário desta página e confirme pelo WhatsApp, que abre uma conversa com uma mensagem pronta. As regras da aula experimental — disponibilidade, duração e o que levar — devem ser confirmadas com a unidade.',
   },
   {
     id: 'faq-horarios',
     q: 'Quais são os horários?',
-    a: 'Os horários de funcionamento e a grade de aulas não foram informados para esta demonstração. Consulte a unidade para informações atualizadas.',
+    a: 'Os horários de funcionamento e a grade de aulas não foram divulgados aqui. Consulte a unidade para informações atualizadas.',
   },
   {
     id: 'faq-experiencia',
@@ -440,15 +440,6 @@ export const faq = [
   {
     id: 'faq-contato',
     q: 'Como posso entrar em contato?',
-    a: 'Pelo botão de WhatsApp desta página, que abre uma conversa com uma mensagem pronta. O número oficial, o Instagram e o endereço completo são campos preparados para edição nesta demonstração.',
+    a: 'Pelo botão de WhatsApp desta página, que abre uma conversa com uma mensagem pronta. Você também pode falar com a equipe pessoalmente na unidade.',
   },
 ]
-
-/* --------------------------------------------------------------------------
-   13) AVISO DE DEMONSTRACAO
-   -------------------------------------------------------------------------- */
-export const demoNotice = {
-  short: 'Demonstração de conceito — projeto independente.',
-  long:
-    'Esta página é uma demonstração de conceito criada de forma independente para apresentar uma proposta de experiência digital. Não é um canal oficial da academia. Informações como telefone, endereço, horários, valores e grade de aulas não foram divulgadas aqui e devem ser confirmadas com a unidade.',
-}

@@ -89,7 +89,7 @@ export function Cart({ open, onClose }) {
 
               <p className="cart__legal">
                 <Icon name="Info" size={13} />
-                Demonstração: o pedido é apenas uma mensagem de WhatsApp. Não há pagamento online nem armazenamento de
+                O pedido é enviado como mensagem de WhatsApp. Não há pagamento online nem armazenamento de
                 dados bancários.
               </p>
             </footer>

@@ -5,7 +5,7 @@
   z-index: var(--z-header);
 }
 
-/* ---- Faixa de demonstracao (recolhe ao rolar) ---- */
+/* ---- Faixa superior do cabecalho (recolhe ao rolar) ---- */
 .header__demo {
   position: relative;
   z-index: 2;
@@ -166,7 +166,7 @@
   inset: 0;
   top: 0;
   z-index: 1;
-  padding-top: calc(var(--header-h) + 34px);
+  padding-top: var(--header-h);
   background: var(--ink-950);
   opacity: 0;
   visibility: hidden;
@@ -174,7 +174,6 @@
   overflow-y: auto;
   overscroll-behavior: contain;
 }
-.header.is-scrolled .mmenu { padding-top: var(--header-h); }
 .mmenu.is-open { opacity: 1; visibility: visible; }
 .mmenu[hidden] { display: none; }
 

@@ -5,7 +5,7 @@
    Aqui ficam as categorias e a lista de produtos. Nenhum componente tem
    produto escrito no meio do código.
 
-   ATENÇÃO — DEMONSTRAÇÃO DE CONCEITO:
+   ATENÇÃO:
    Nenhuma marca, preço, sabor, tamanho, peso ou informação nutricional foi
    inventado. Os itens abaixo representam CATEGORIAS de suplemento, para
    mostrar a estrutura da vitrine. Os dados reais devem vir da unidade.

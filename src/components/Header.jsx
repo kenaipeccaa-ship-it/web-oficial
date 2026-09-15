@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Icon } from './ui/Icon.jsx'
 import WhatsAppLink from './ui/WhatsAppLink.jsx'
-import { demoNotice, navLinks, whatsappMessages } from '../config/site.js'
+import { navLinks, whatsappMessages } from '../config/site.js'
 import { useSiteInfo } from '../lib/content.jsx'
 import { useLockBodyScroll } from '../hooks/useLockBodyScroll.js'
 import { useScrollSpy } from '../hooks/useScrollSpy.js'
@@ -39,15 +39,6 @@ export default function Header() {
 
   return (
     <header className={`header ${scrolled ? 'is-scrolled' : ''} ${open ? 'is-open' : ''}`}>
-      {/* Faixa que deixa explicito o carater de demonstracao do projeto. */}
-      <div className="header__demo" aria-hidden={scrolled}>
-        <div className="container header__demo-inner">
-          <Icon name="Info" size={13} />
-          <span className="header__demo-full">{demoNotice.short}</span>
-          <span className="header__demo-short">Demonstração de conceito</span>
-        </div>
-      </div>
-
       <div className="header__bar">
         <div className="container header__inner">
           <a href="#inicio" className="logo" onClick={() => setOpen(false)}>

@@ -161,15 +161,6 @@ export default function Store() {
             ))}
           </ul>
         )}
-
-        <Reveal className="demo-note store__note">
-          <Icon name="Info" size={16} />
-          <p>
-            <strong>Nota da demonstração:</strong> os produtos acima representam categorias de suplemento e servem para
-            mostrar a estrutura da loja. Marcas, preços, sabores, tamanhos e informação nutricional não foram
-            cadastrados — tudo é definido pela unidade em <code>src/data/products.js</code>.
-          </p>
-        </Reveal>
       </div>
 
       <ProductModal

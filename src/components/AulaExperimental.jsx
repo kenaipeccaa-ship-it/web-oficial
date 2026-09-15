@@ -57,7 +57,7 @@ export default function AulaExperimental() {
       first?.focus()
       return
     }
-    // DEMONSTRACAO: nenhum dado e enviado ou armazenado.
+    // Nenhum dado e enviado ou armazenado: o agendamento acontece pelo WhatsApp.
     // Para integrar de verdade, envie "form" para o seu backend/CRM aqui.
     setSent(true)
   }
@@ -104,10 +104,9 @@ export default function AulaExperimental() {
             <div className="form-done" role="status">
               <span className="form-done__icon"><Icon name="CheckCircle2" size={30} /></span>
               <h3 className="form-done__title">Obrigado!</h3>
-              <p className="form-done__text">Sua solicitação foi registrada nesta demonstração.</p>
+              <p className="form-done__text">Falta só um passo para garantir sua aula.</p>
               <p className="form-done__note">
-                Este é um protótipo: os dados não foram enviados nem armazenados. Na versão final, o formulário pode
-                encaminhar o contato por e-mail, WhatsApp ou para o sistema da unidade.
+                Confirme seu horário pelo WhatsApp: é por lá que a equipe responde e agenda a visita.
               </p>
               <div className="form-done__actions">
                 <WhatsAppLink className="btn btn--wa btn--block" message={whatsappMessages.experimental}>
@@ -197,7 +196,7 @@ export default function AulaExperimental() {
 
               <p className="form__legal">
                 <Icon name="Info" size={14} />
-                Demonstração: os dados preenchidos não são enviados nem armazenados.
+Seus dados não são armazenados. O agendamento é confirmado pelo WhatsApp.
               </p>
             </form>
           )}

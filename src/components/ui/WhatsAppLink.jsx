@@ -27,7 +27,7 @@ export function WhatsAppLink({ message, className = '', children, ariaLabel, ...
       className={className}
       aria-label={ariaLabel}
       onClick={() =>
-        notify('Demonstração: o número de WhatsApp ainda não foi configurado. Ele é definido em um único campo do projeto (WHATSAPP_NUMBER).')
+        notify('O número de WhatsApp ainda não foi divulgado. Fale com a equipe na unidade.')
       }
       {...rest}
     >

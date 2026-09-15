@@ -62,14 +62,6 @@ export default function Planos() {
             </Reveal>
           ))}
         </ul>
-
-        <Reveal className="demo-note planos__note">
-          <Icon name="Info" size={16} />
-          <p>
-            Nenhum valor, desconto ou condição de contrato foi informado nesta demonstração. Os campos de preço estão
-            preparados para receber os dados oficiais da unidade.
-          </p>
-        </Reveal>
       </div>
     </section>
   )

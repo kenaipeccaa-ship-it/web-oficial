@@ -37,7 +37,7 @@ export function ProductModal({ product, onClose, onAdd, inCart }) {
             <div className="demo-note p-modal__demo">
               <Icon name="Info" size={16} />
               <p>
-                Demonstração: marca, sabor, tamanho e informação nutricional não foram cadastrados aqui. Valores e
+                Marca, sabor, tamanho e informação nutricional não foram cadastrados aqui. Valores e
                 disponibilidade são confirmados com a unidade.
               </p>
             </div>

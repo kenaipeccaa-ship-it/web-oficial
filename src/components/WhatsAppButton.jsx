@@ -57,7 +57,7 @@ export default function WhatsAppButton() {
         </ul>
         {!whatsappNumber && (
           <p className="wa__panel-note">
-            Demonstração: o número ainda não foi configurado (campo único <strong>WHATSAPP_NUMBER</strong>).
+O número de WhatsApp ainda não foi divulgado.
           </p>
         )}
       </div>

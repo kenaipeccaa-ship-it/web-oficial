@@ -6,7 +6,7 @@
    Enquanto nao houver fotos oficiais, cada slot de imagem renderiza uma ARTE
    GRAFICA gerada em SVG (componente <Art />). A arte e abstrata de proposito:
    ela NAO simula uma foto real da unidade e por isso nao induz o visitante a
-   erro em uma demonstracao.
+   erro em producao.
 
    COMO COLOCAR AS FOTOS REAIS
    1. Salve as imagens em /public/fotos/ (ex.: /public/fotos/musculacao.jpg).

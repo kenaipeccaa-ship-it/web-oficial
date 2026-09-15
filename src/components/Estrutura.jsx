@@ -53,16 +53,6 @@ export default function Estrutura() {
                 </Reveal>
               ))}
         </ul>
-
-        {!usandoFotosReais && (
-          <Reveal className="demo-note estrutura__note">
-            <Icon name="Info" size={16} />
-            <p>
-              As imagens acima são <strong>artes ilustrativas</strong> criadas para esta demonstração — não são fotografias
-              da unidade. Na versão final, elas são substituídas pelas fotos reais do espaço.
-            </p>
-          </Reveal>
-        )}
       </div>
     </section>
   )

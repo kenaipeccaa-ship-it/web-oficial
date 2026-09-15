@@ -286,7 +286,7 @@
 }
 .pill svg { color: var(--red); }
 
-/* -------------------------- Nota de demonstracao -------------------------- */
+/* ----------------------------- Nota informativa --------------------------- */
 .demo-note {
   display: flex;
   align-items: flex-start;

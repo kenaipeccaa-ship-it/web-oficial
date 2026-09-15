@@ -50,14 +50,6 @@ export default function Modalidades() {
           ))}
         </ul>
 
-        <Reveal className="demo-note mods__note">
-          <Icon name="Info" size={16} />
-          <p>
-            <strong>Nota da demonstração:</strong> as modalidades acima foram usadas para montar esta proposta. Nomes,
-            disponibilidade e horários devem ser confirmados com a unidade antes da publicação oficial. Nenhum horário
-            foi informado aqui.
-          </p>
-        </Reveal>
       </div>
 
       {/* ------------------------------ Modal ------------------------------ */}
@@ -106,7 +98,7 @@ export default function Modalidades() {
                 <Icon name="Info" size={16} />
                 <p>
                   {current.details.needsConfirmation
-                    ? 'O nome desta modalidade e sua disponibilidade precisam ser confirmados com a unidade. Grade de horários não divulgada nesta demonstração.'
+                    ? 'O nome desta modalidade e sua disponibilidade precisam ser confirmados com a unidade. Grade de horários não divulgada.'
                     : 'Disponibilidade e grade de horários desta modalidade devem ser confirmadas com a unidade.'}
                 </p>
               </div>
