@@ -62,23 +62,44 @@ const envOf = (name) => {
 }
 
 /**
- * Procura uma variável pelo nome canônico OU por qualquer nome terminado nele.
+ * Procura uma variável pelo nome canônico, ignorando maiúsculas/minúsculas,
+ * e aceitando também nomes com prefixo.
  *
- * A Vercel nem sempre injeta o nome canônico: quando o store não é o primeiro
- * do projeto, ou foi conectado com prefixo, ela gera algo como
- * SKYFIT_MEDIA_BLOB_STORE_ID. Procurar só o nome exato faz a credencial
- * parecer ausente quando na verdade está lá, com outro nome.
+ * A Vercel não injeta necessariamente o nome canônico. Ao conectar um store
+ * com prefixo, ela usa o prefixo COMO ESCRITO e só padroniza o resto — foi o
+ * que aconteceu aqui: o projeto recebeu `blob_STORE_ID` e
+ * `blob_READ_WRITE_TOKEN`, em minúsculas. Repare que `blob_STORE_ID` não
+ * termina em `_BLOB_STORE_ID`; comparar caixa a caixa, ou só por sufixo,
+ * fazia a variável parecer ausente estando presente.
+ *
+ * Por isso a comparação é feita em caixa alta, de duas formas:
+ *   - nome inteiro igual            (blob_STORE_ID          -> BLOB_STORE_ID)
+ *   - nome terminado em `_<alvo>`   (SKYFIT_BLOB_STORE_ID   -> BLOB_STORE_ID)
+ *
+ * A varredura é ordenada para o resultado não depender da ordem do ambiente.
  */
 export function findEnv(suffix) {
+  const alvo = suffix.toUpperCase()
+
   const exato = envOf(suffix)
   if (exato) return { name: suffix, value: exato }
-  for (const name of Object.keys(process.env)) {
-    if (!name.endsWith(`_${suffix}`)) continue
+
+  for (const name of Object.keys(process.env).sort()) {
+    const up = name.toUpperCase()
+    if (up !== alvo && !up.endsWith(`_${alvo}`)) continue
     const value = envOf(name)
     if (value) return { name, value }
   }
   return null
 }
+
+/**
+ * Um token read-write do Blob é `vercel_blob_rw_<storeId>_<resto>`. Checar o
+ * formato evita trocar um OIDC que funciona por um token inutilizável só
+ * porque alguma variável de nome parecido existe.
+ */
+const pareceTokenBlob = (valor) =>
+  /^vercel_blob_rw_/i.test(valor) && Boolean(String(valor).split('_')[3])
 
 /** `https://<storeId>.public.blob.vercel-storage.com/...` -> storeId */
 export function storeIdDaUrl(url) {
@@ -105,7 +126,7 @@ export const normalizeStoreId = (id) =>
  */
 export function blobCredentials() {
   const tokenVar = findEnv('BLOB_READ_WRITE_TOKEN')
-  if (tokenVar) return { mode: 'token', token: tokenVar.value }
+  if (tokenVar && pareceTokenBlob(tokenVar.value)) return { mode: 'token', token: tokenVar.value }
 
   const oidcToken = requestContext().oidcToken || envOf('VERCEL_OIDC_TOKEN')
   if (!oidcToken) return null
@@ -143,7 +164,15 @@ export function blobDiagnostics() {
     credencial: cred ? cred.mode : 'nenhuma',
     headerOidcNestaRequisicao: Boolean(requestContext().oidcToken),
     contextoGlobalDoSdk: pontePropria(),
-    variaveis: Object.fromEntries(nomes.map((n) => [n, envOf(n) ? 'presente' : 'ausente'])),
+    /* "presente" aqui significa achado pela MESMA busca que o upload usa —
+       sob qualquer caixa ou prefixo. Mostra o nome real quando difere. */
+    variaveis: Object.fromEntries(
+      nomes.map((n) => {
+        const achado = findEnv(n)
+        if (!achado) return [n, 'ausente']
+        return [n, achado.name === n ? 'presente' : `presente como ${achado.name}`]
+      }),
+    ),
     /* Nomes (nunca valores) de toda variável de Blob/OIDC que a função
        enxerga. É aqui que apareceria um nome com prefixo, se existisse. */
     nomesRelacionados: Object.keys(process.env).filter((n) => /BLOB|OIDC/i.test(n)).sort(),
