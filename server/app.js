@@ -15,9 +15,10 @@ import path from 'node:path'
 import {
   DIST_DIR, IS_PROD, IS_VERCEL, MAX_UPLOAD_BYTES, SERVE_STATIC, storageDriver, UPLOADS_DIR,
   blobWarning,
+  blobDiagnostics,
   serverlessMisconfig,
 } from './config.js'
-import { ensureAdminUser } from './auth.js'
+import { ensureAdminUser, requireAuth } from './auth.js'
 import { requestContextMiddleware } from './request-context.js'
 import { ready } from './db.js'
 import authRoutes from './routes/auth.routes.js'
@@ -99,6 +100,12 @@ export function createApp() {
   }
 
   /* --------------------------------- API --------------------------------- */
+  /* Diagnóstico de armazenamento. Exige sessão de administrador e devolve
+     apenas NOMES e estados ("presente"/"ausente") — nenhum valor de variável,
+     nenhum token. Serve para responder, de dentro da produção, o que a função
+     realmente enxerga do ambiente. */
+  app.get('/api/admin/diagnostico', requireAuth, (_req, res) => res.json(blobDiagnostics()))
+
   app.use('/api/public', publicRoutes)
   app.use('/api/auth', authRoutes)
   app.use('/api/admin/gallery', galleryRoutes)

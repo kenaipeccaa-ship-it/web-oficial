@@ -9,7 +9,7 @@
    ========================================================================== */
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { requestContext } from './request-context.js'
+import { pontePropria, requestContext } from './request-context.js'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 export const ROOT = path.resolve(here, '..')
@@ -72,10 +72,40 @@ export function blobCredentials() {
   const token = envOf('BLOB_READ_WRITE_TOKEN')
   if (token) return { mode: 'token', token }
 
+  /* O token OIDC pode chegar pelo header da requisição ou pelo ambiente.
+     O storeId é opcional aqui: sem ele o SDK ainda tenta ler BLOB_STORE_ID
+     por conta própria, e o erro que ele dá nesse caso é específico ("no
+     storeId was found"), o que é mais útil do que devolver null e cair no
+     genérico "No blob credentials found". */
   const oidcToken = requestContext().oidcToken || envOf('VERCEL_OIDC_TOKEN')
-  const storeId = envOf('BLOB_STORE_ID')
-  if (oidcToken && storeId) return { mode: 'oidc', oidcToken, storeId }
+  if (oidcToken) return { mode: 'oidc', oidcToken, storeId: envOf('BLOB_STORE_ID') }
   return null
+}
+
+/**
+ * Diagnóstico de credenciais — NOMES e fatos, nunca valores.
+ *
+ * Serve para responder, de dentro da produção, a única pergunta que não dá
+ * para responder de fora: quais variáveis a função realmente enxerga. Um
+ * segredo nunca sai daqui; só "presente" ou "ausente".
+ */
+export function blobDiagnostics() {
+  const nomes = [
+    'BLOB_READ_WRITE_TOKEN', 'BLOB_STORE_ID', 'BLOB_WEBHOOK_PUBLIC_KEY',
+    'VERCEL_OIDC_TOKEN', 'TURSO_DATABASE_URL', 'TURSO_AUTH_TOKEN',
+  ]
+  const cred = blobCredentials()
+  return {
+    /* VERCEL_ENV não é segredo: diz se este deploy é production ou preview.
+       Variável definida só para Production não chega num deploy de Preview. */
+    vercelEnv: process.env.VERCEL_ENV || '(não definido)',
+    vercel: IS_VERCEL,
+    driver: storageDriver(),
+    credencial: cred ? cred.mode : 'nenhuma',
+    headerOidcNestaRequisicao: Boolean(requestContext().oidcToken),
+    contextoGlobalDoSdk: pontePropria(),
+    variaveis: Object.fromEntries(nomes.map((n) => [n, envOf(n) ? 'presente' : 'ausente'])),
+  }
 }
 
 /**
