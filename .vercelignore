@@ -1,6 +1,22 @@
-# Nunca enviar para a Vercel
+# Nunca enviar para a Vercel.
+#
+# ATENCAO: os padroes seguem a sintaxe do .gitignore — sem a barra inicial
+# eles casam com QUALQUER diretorio de mesmo nome, em qualquer nivel.
+# Foi assim que "data/" acabou removendo src/data/products.js do build,
+# quebrando tanto o Vite quanto a funcao serverless (server/db.js importa
+# esse arquivo para semear os produtos). Mantenha a barra inicial nos
+# caminhos que sao da raiz do projeto.
+#
+# Comentario so vale em linha propria: "# texto" no fim de uma linha de
+# padrao passa a fazer parte do padrao.
+
 .env
 .env.*
-data/
+
+# banco SQLite local (em producao o banco e o Turso)
+/data/
+
+# suites de teste e utilitarios de desenvolvimento
+/scripts/
+
 node_modules/
-scripts/
